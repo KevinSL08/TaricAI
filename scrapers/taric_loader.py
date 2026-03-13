@@ -1,8 +1,18 @@
 """
 Loader: carga datos TARIC scrapeados en PostgreSQL.
 
-Lee los JSON generados por eu_taric_scraper y aeat_scraper,
-y los inserta en las tablas de la base de datos.
+Lee el JSON generado por eu_taric_scraper (taric_nomenclature.json)
+y lo inserta en las tablas de la base de datos.
+
+Estructura del JSON:
+  sections[] -> chapters[] -> headings[] -> commodities[]
+
+Mapeo a tablas:
+  Section (roman_numeral, title_es, title_en)
+  Chapter (code 2 dig, description_es, section_id)
+  Heading (code 4 dig, description_es, chapter_id)
+  Subheading (code 6 dig, description_es, heading_id)
+  TaricCode (code 10 dig, description_es, subheading_id)
 """
 
 import json
@@ -19,126 +29,135 @@ from app.models.taric import Section, Chapter, Heading, Subheading, TaricCode
 
 DATA_DIR = Path(__file__).parent.parent / "data" / "taric"
 
-
-def load_sections(db: Session) -> dict[str, int]:
-    """Carga las 21 secciones TARIC desde el JSON estático."""
-    sections_file = DATA_DIR / "taric_sections.json"
-
-    if not sections_file.exists():
-        print("ERROR: No existe taric_sections.json. Ejecuta primero eu_taric_scraper.py")
-        return {}
-
-    with open(sections_file, "r", encoding="utf-8") as f:
-        sections_data = json.load(f)
-
-    section_map = {}  # roman -> id
-    for s in sections_data:
-        existing = db.query(Section).filter_by(roman_numeral=s["roman"]).first()
-        if existing:
-            section_map[s["roman"]] = existing.id
-            continue
-
-        section = Section(
-            roman_numeral=s["roman"],
-            title_es=s["title_es"],
-            title_en=s["title_en"],
-        )
-        db.add(section)
-        db.flush()
-        section_map[s["roman"]] = section.id
-
-    db.commit()
-    print(f"Secciones cargadas: {len(section_map)}")
-    return section_map
+# Mapeo seccion ID -> numeral romano
+ROMAN_NUMERALS = {
+    1: "I", 2: "II", 3: "III", 4: "IV", 5: "V", 6: "VI", 7: "VII",
+    8: "VIII", 9: "IX", 10: "X", 11: "XI", 12: "XII", 13: "XIII",
+    14: "XIV", 15: "XV", 16: "XVI", 17: "XVII", 18: "XVIII", 19: "XIX",
+    20: "XX", 21: "XXI",
+}
 
 
-def load_nomenclature(db: Session, section_map: dict[str, int]):
-    """Carga la nomenclatura completa desde el JSON de EU TARIC."""
-    nom_file = DATA_DIR / "taric_nomenclature.json"
+def load_full_nomenclature(db: Session, data: dict):
+    """Carga toda la nomenclatura TARIC desde el JSON del scraper."""
 
-    if not nom_file.exists():
-        print("ERROR: No existe taric_nomenclature.json. Ejecuta primero eu_taric_scraper.py")
-        return
+    stats = {
+        "sections": 0,
+        "chapters": 0,
+        "headings": 0,
+        "subheadings": 0,
+        "taric_codes": 0,
+        "skipped_duplicates": 0,
+    }
 
-    with open(nom_file, "r", encoding="utf-8") as f:
-        data = json.load(f)
+    for section_data in data.get("sections", []):
+        # --- SECCION ---
+        roman = section_data.get("roman", "")
+        title_es = section_data.get("title_es", "")
+        title_en = section_data.get("title_en", "")
 
-    chapters_data = data.get("chapters", {})
-    chapter_count = 0
-    heading_count = 0
-
-    for chapter_code, chapter_data in chapters_data.items():
-        section_roman = chapter_data.get("section", "")
-        section_id = section_map.get(section_roman)
-
-        if not section_id:
-            print(f"  WARN: Sección {section_roman} no encontrada para capítulo {chapter_code}")
-            continue
-
-        # Crear o buscar capítulo
-        existing_ch = db.query(Chapter).filter_by(code=chapter_code).first()
-        if not existing_ch:
-            ch = Chapter(
-                code=chapter_code,
-                description_es=f"Capítulo {chapter_code}",
-                section_id=section_id,
+        section = db.query(Section).filter_by(roman_numeral=roman).first()
+        if not section:
+            section = Section(
+                roman_numeral=roman,
+                title_es=title_es,
+                title_en=title_en,
             )
-            db.add(ch)
+            db.add(section)
             db.flush()
-            chapter_id = ch.id
-            chapter_count += 1
-        else:
-            chapter_id = existing_ch.id
+            stats["sections"] += 1
+            print(f"  Seccion {roman}: {title_es[:50]}")
 
-        # Cargar partidas del capítulo
-        for h in chapter_data.get("headings", []):
-            code = h.get("code", "")
-            desc = h.get("description", "")
+        for ch_data in section_data.get("chapters", []):
+            # --- CAPITULO ---
+            ch_code = ch_data.get("code", "")
+            ch_desc = ch_data.get("description_en", "")
 
-            if len(code) == 4:
-                existing_h = db.query(Heading).filter_by(code=code).first()
-                if not existing_h:
+            chapter = db.query(Chapter).filter_by(code=ch_code).first()
+            if not chapter:
+                chapter = Chapter(
+                    code=ch_code,
+                    description_es=ch_desc,  # En ingles por ahora, AEAT enriquece despues
+                    section_id=section.id,
+                )
+                db.add(chapter)
+                db.flush()
+                stats["chapters"] += 1
+
+            for h_data in ch_data.get("headings", []):
+                # --- PARTIDA (4 digitos) ---
+                h_code = h_data.get("code", "")
+                h_desc = h_data.get("description", "")
+
+                heading = db.query(Heading).filter_by(code=h_code).first()
+                if not heading:
                     heading = Heading(
-                        code=code,
-                        description_es=desc,
-                        chapter_id=chapter_id,
+                        code=h_code,
+                        description_es=h_desc,
+                        chapter_id=chapter.id,
                     )
                     db.add(heading)
-                    heading_count += 1
-            elif len(code) == 6:
-                # Find parent heading
-                parent_code = code[:4]
-                parent = db.query(Heading).filter_by(code=parent_code).first()
-                if parent:
-                    existing_sh = db.query(Subheading).filter_by(code=code).first()
-                    if not existing_sh:
-                        subheading = Subheading(
-                            code=code,
-                            description_es=desc,
-                            heading_id=parent.id,
-                        )
-                        db.add(subheading)
-            elif len(code) == 10:
-                # Find parent subheading
-                parent_code = code[:6]
-                parent = db.query(Subheading).filter_by(code=parent_code).first()
-                if parent:
-                    existing_tc = db.query(TaricCode).filter_by(code=code).first()
-                    if not existing_tc:
-                        taric = TaricCode(
-                            code=code,
-                            description_es=desc,
-                            subheading_id=parent.id,
-                        )
-                        db.add(taric)
+                    db.flush()
+                    stats["headings"] += 1
 
-    db.commit()
-    print(f"Capítulos cargados: {chapter_count}")
-    print(f"Partidas cargadas: {heading_count}")
+                # Procesar commodities -> Subheadings (6 dig) + TaricCodes (8-10 dig)
+                # Primero recopilar subheadings unicos
+                subheading_map = {}  # code_6dig -> Subheading
+
+                for comm in h_data.get("commodities", []):
+                    comm_code = comm.get("code", "").replace(" ", "")
+                    comm_desc = comm.get("description", "")
+
+                    if len(comm_code) < 6:
+                        continue
+
+                    # Extraer subheading (6 primeros digitos)
+                    sh_code = comm_code[:6]
+
+                    if sh_code not in subheading_map:
+                        # Buscar o crear subheading
+                        subheading = db.query(Subheading).filter_by(code=sh_code).first()
+                        if not subheading:
+                            # Usar la descripcion del commodity si el codigo coincide exactamente
+                            sh_desc = comm_desc if comm_code[:6] == comm_code.rstrip("0")[:6] else ""
+                            subheading = Subheading(
+                                code=sh_code,
+                                description_es=sh_desc or f"Subpartida {sh_code}",
+                                heading_id=heading.id,
+                            )
+                            db.add(subheading)
+                            db.flush()
+                            stats["subheadings"] += 1
+                        subheading_map[sh_code] = subheading
+
+                    # Crear TaricCode (10 digitos) si es declarable/leaf
+                    if len(comm_code) >= 8 and comm.get("declarable", False):
+                        # Normalizar a 10 digitos
+                        taric_code_str = comm_code.ljust(10, "0")[:10]
+                        sh = subheading_map.get(sh_code)
+
+                        if sh:
+                            existing = db.query(TaricCode).filter_by(code=taric_code_str).first()
+                            if not existing:
+                                taric = TaricCode(
+                                    code=taric_code_str,
+                                    description_es=comm_desc,
+                                    subheading_id=sh.id,
+                                )
+                                db.add(taric)
+                                stats["taric_codes"] += 1
+                            else:
+                                stats["skipped_duplicates"] += 1
+
+            # Commit por capitulo para no perder todo si falla
+            db.commit()
+            print(f"    Cap {ch_code}: {stats['headings']} headings, {stats['taric_codes']} codes total")
+
+    return stats
 
 
 def enrich_with_aeat(db: Session):
-    """Enriquece los datos con descripciones en español de AEAT."""
+    """Enriquece los datos con descripciones en espanol de AEAT."""
     aeat_file = DATA_DIR / "aeat_nomenclature.json"
 
     if not aeat_file.exists():
@@ -158,7 +177,6 @@ def enrich_with_aeat(db: Session):
             if not code or not desc_es:
                 continue
 
-            # Update matching records with Spanish descriptions
             if len(code) == 4:
                 record = db.query(Heading).filter_by(code=code).first()
             elif len(code) == 6:
@@ -182,32 +200,44 @@ def load_all():
     """Ejecuta el proceso completo de carga."""
     print("=== TaricAI Data Loader ===\n")
 
+    nom_file = DATA_DIR / "taric_nomenclature.json"
+    if not nom_file.exists():
+        print("ERROR: No existe taric_nomenclature.json")
+        print("Ejecuta primero: python scrapers/eu_taric_scraper.py")
+        return
+
     # Create tables if they don't exist
+    print("Creando tablas si no existen...")
     Base.metadata.create_all(bind=engine)
+
+    # Load JSON
+    print(f"Leyendo {nom_file}...")
+    with open(nom_file, "r", encoding="utf-8") as f:
+        data = json.load(f)
 
     db = SessionLocal()
     try:
-        print("1. Cargando secciones...")
-        section_map = load_sections(db)
+        print("\n1. Cargando nomenclatura completa...")
+        stats = load_full_nomenclature(db, data)
 
-        if not section_map:
-            print("No se pudieron cargar las secciones. Abortando.")
-            return
-
-        print("\n2. Cargando nomenclatura EU TARIC...")
-        load_nomenclature(db, section_map)
-
-        print("\n3. Enriqueciendo con datos AEAT...")
+        print("\n2. Enriqueciendo con datos AEAT...")
         enrich_with_aeat(db)
 
-        # Print stats
-        print("\n=== Estadísticas ===")
-        print(f"Secciones:   {db.query(Section).count()}")
-        print(f"Capítulos:   {db.query(Chapter).count()}")
-        print(f"Partidas:    {db.query(Heading).count()}")
-        print(f"Subpartidas: {db.query(Subheading).count()}")
-        print(f"Códigos 10d: {db.query(TaricCode).count()}")
-        print("\n¡Carga completada!")
+        # Print final stats
+        print("\n" + "=" * 40)
+        print("ESTADISTICAS FINALES")
+        print("=" * 40)
+        print(f"Secciones:    {db.query(Section).count()}")
+        print(f"Capitulos:    {db.query(Chapter).count()}")
+        print(f"Partidas:     {db.query(Heading).count()}")
+        print(f"Subpartidas:  {db.query(Subheading).count()}")
+        print(f"Codigos TARIC:{db.query(TaricCode).count()}")
+        print(f"\nDuplicados saltados: {stats.get('skipped_duplicates', 0)}")
+        print("\nCarga completada!")
+    except Exception as e:
+        print(f"\nERROR: {e}")
+        db.rollback()
+        raise
     finally:
         db.close()
 
