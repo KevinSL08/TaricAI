@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TaricAI · KR1 Semana 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=JetBrains+Mono:wght@400;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:      #070C18;
+    --surface: #0D1526;
+    --card:    #111E33;
+    --card2:   #0F1A2E;
+    --border:  rgba(255,255,255,0.06);
+    --gold:    #E8B84B;
+    --gold2:   #F5D27A;
+    --teal:    #2DD4BF;
+    --blue:    #3B82F6;
+    --green:   #22C55E;
+    --red:     #EF4444;
+    --orange:  #F97316;
+    --purple:  #A78BFA;
+    --text:    #E2E8F0;
+    --muted:   #64748B;
+    --muted2:  #94A3B8;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── NOISE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+    opacity: 0.4;
+  }
+
+  /* ── GLOW BLOBS ── */
+  .blob {
+    position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0;
+  }
+  .blob1 { width: 500px; height: 500px; background: rgba(232,184,75,0.06); top: -100px; left: -100px; }
+  .blob2 { width: 400px; height: 400px; background: rgba(45,212,191,0.05); bottom: -80px; right: -80px; }
+
+  /* ── LAYOUT ── */
+  .wrap { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 24px 80px; }
+
+  /* ── HEADER ── */
+  header {
+    padding: 40px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 40px;
+  }
+  .brand {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem; font-weight: 800;
+    letter-spacing: -1px; margin-bottom: 4px;
+  }
+  .brand span { color: var(--gold); }
+  .brand em { color: var(--teal); font-style: normal; }
+  .header-sub {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.72rem; color: var(--muted2);
+    letter-spacing: 1px;
+  }
+
+  /* ── PROGRESS HERO ── */
+  .progress-hero {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 32px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: center;
+  }
+  .okr-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.65rem; color: var(--teal);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .okr-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.25rem; font-weight: 700;
+    line-height: 1.3; color: var(--text);
+    margin-bottom: 6px;
+  }
+  .okr-desc { font-size: 0.85rem; color: var(--muted2); line-height: 1.6; }
+  .progress-ring-wrap { position: relative; width: 110px; height: 110px; flex-shrink: 0; }
+  .progress-ring-wrap svg { transform: rotate(-90deg); }
+  .ring-bg { fill: none; stroke: rgba(255,255,255,0.05); stroke-width: 8; }
+  .ring-fill { fill: none; stroke-width: 8; stroke-linecap: round; transition: stroke-dashoffset 0.6s cubic-bezier(.4,0,.2,1); }
+  .ring-text {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .ring-pct {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem; font-weight: 800;
+    color: var(--gold); line-height: 1;
+  }
+  .ring-lbl { font-size: 0.62rem; color: var(--muted); margin-top: 2px; }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 12px; margin-bottom: 32px;
+  }
+  .stat-card {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 14px; padding: 18px 16px;
+    text-align: center; transition: border-color 0.2s;
+  }
+  .stat-card:hover { border-color: rgba(232,184,75,0.2); }
+  .stat-n {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.6rem; font-weight: 800;
+    display: block; margin-bottom: 2px;
+  }
+  .stat-l { font-size: 0.72rem; color: var(--muted2); }
+
+  /* ── DAY SECTIONS ── */
+  .day-section { margin-bottom: 28px; }
+  .day-header {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px 12px 0 0;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.2s;
+  }
+  .day-header:hover { background: var(--card2); }
+  .day-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    flex-shrink: 0; transition: all 0.3s;
+  }
+  .day-name {
+    font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 0.95rem;
+    flex: 1;
+  }
+  .day-meta { font-size: 0.75rem; color: var(--muted2); }
+  .day-prog {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem; font-weight: 600;
+  }
+  .day-chevron {
+    color: var(--muted); font-size: 0.8rem;
+    transition: transform 0.3s;
+  }
+  .day-section.open .day-chevron { transform: rotate(180deg); }
+  .day-body {
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+    display: none;
+  }
+  .day-section.open .day-body { display: block; }
+
+  /* ── TASK ITEM ── */
+  .task-item {
+    display: flex; align-items: flex-start; gap: 14px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .task-item:last-child { border-bottom: none; }
+  .task-item:hover { background: rgba(255,255,255,0.02); }
+  .task-item.done { background: rgba(34,197,94,0.03); }
+  .task-item.done .task-title { text-decoration: line-through; color: var(--muted); }
+  .task-item.done .task-desc { opacity: 0.4; }
+
+  /* Custom checkbox */
+  .check-box {
+    width: 22px; height: 22px; flex-shrink: 0;
+    border: 2px solid var(--border);
+    border-radius: 6px; margin-top: 1px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+    background: transparent;
+  }
+  .task-item:hover .check-box { border-color: var(--teal); }
+  .task-item.done .check-box {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .check-icon { display: none; color: white; font-size: 0.75rem; font-weight: 700; }
+  .task-item.done .check-icon { display: block; }
+
+  .task-content { flex: 1; min-width: 0; }
+  .task-header-row {
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap; margin-bottom: 4px;
+  }
+  .task-title {
+    font-size: 0.9rem; font-weight: 500;
+    color: var(--text); line-height: 1.4;
+    transition: color 0.2s;
+  }
+  .task-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.6rem; font-weight: 600;
+    padding: 2px 8px; border-radius: 4px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    flex-shrink: 0;
+  }
+  .task-desc {
+    font-size: 0.8rem; color: var(--muted2);
+    line-height: 1.55; margin-bottom: 8px;
+    transition: opacity 0.2s;
+  }
+  .task-meta {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    align-items: center;
+  }
+  .meta-chip {
+    display: inline-flex; align-items: center; gap: 4px;
+    font-size: 0.7rem; color: var(--muted2);
+  }
+  .meta-chip span { color: var(--teal); }
+
+  /* ── PROGRESS BAR INLINE ── */
+  .day-progress-bar {
+    height: 3px; background: rgba(255,255,255,0.04);
+    border-radius: 2px; overflow: hidden;
+    margin-top: 4px;
+  }
+  .day-progress-fill {
+    height: 100%; border-radius: 2px;
+    background: linear-gradient(90deg, var(--teal), var(--gold));
+    transition: width 0.4s ease;
+  }
+
+  /* ── KR CARD ── */
+  .kr-card {
+    background: linear-gradient(135deg, rgba(232,184,75,0.06), rgba(45,212,191,0.04));
+    border: 1px solid rgba(232,184,75,0.15);
+    border-radius: 16px; padding: 24px;
+    margin-bottom: 32px;
+  }
+  .kr-card-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.62rem; color: var(--gold);
+    letter-spacing: 2px; text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .kr-card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 1rem; font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .kr-card-desc { font-size: 0.83rem; color: var(--muted2); line-height: 1.6; }
+  .kr-metric {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 12px;
+    background: rgba(232,184,75,0.1);
+    border: 1px solid rgba(232,184,75,0.2);
+    border-radius: 8px; padding: 6px 14px;
+    font-size: 0.78rem; color: var(--gold);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  /* ── RESET BTN ── */
+  .reset-btn {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--card); border: 1px solid var(--border);
+    color: var(--muted2); font-size: 0.75rem;
+    font-family: 'DM Sans', sans-serif;
+    padding: 8px 16px; border-radius: 8px;
+    cursor: pointer; z-index: 99;
+    transition: all 0.2s;
+  }
+  .reset-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* ── CELEBRATION ── */
+  .celebration {
+    display: none; position: fixed; inset: 0;
+    background: rgba(7,12,24,0.92);
+    z-index: 200; align-items: center; justify-content: center;
+    flex-direction: column; gap: 16px;
+    text-align: center;
+  }
+  .celebration.show { display: flex; }
+  .celebration h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem; font-weight: 800;
+    color: var(--gold);
+  }
+  .celebration p { color: var(--muted2); font-size: 1rem; }
+  .celebration button {
+    margin-top: 8px;
+    background: var(--gold); color: #070C18;
+    border: none; padding: 12px 28px;
+    border-radius: 8px; font-family: 'Syne', sans-serif;
+    font-weight: 700; font-size: 0.9rem; cursor: pointer;
+  }
+  .confetti-emoji { font-size: 3rem; animation: bounce 0.6s infinite alternate; }
+  @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-12px); } }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .stats-row { grid-template-columns: repeat(2,1fr); }
+    .progress-hero { grid-template-columns: 1fr; }
+    .progress-ring-wrap { margin: 0 auto; }
+  }
+</style>
+</head>
+<body>
+<div class="blob blob1"></div>
+<div class="blob blob2"></div>
+
+<div class="wrap">
+
+  <!-- HEADER -->
+  <header>
+    <div class="brand"><span>Taric</span><em>AI</em></div>
+    <div class="header-sub">KR1 · Semana 1 · Motor de Clasificación Arancelaria</div>
+  </header>
+
+  <!-- KR CARD -->
+  <div class="kr-card">
+    <div class="kr-card-label">🎯 Key Result 1 — Fase 1</div>
+    <div class="kr-card-title">Motor de clasificación TARIC funcional en producción</div>
+    <div class="kr-card-desc">Esta primera semana sienta las bases: entorno configurado, primeros datos oficiales extraídos y el clasificador por texto arrancando. Sin esta semana, nada de lo demás es posible.</div>
+    <div class="kr-metric">📊 Meta final KR1: &gt;90% precisión · Semana 1 contribuye al 20% del avance total</div>
+  </div>
+
+  <!-- PROGRESS HERO -->
+  <div class="progress-hero">
+    <div>
+      <div class="okr-label">Progreso semanal</div>
+      <div class="okr-title">Semana 1 — Fundamentos y Entorno</div>
+      <div class="okr-desc">25 tareas distribuidas en 5 días. Completa cada una en orden. El entorno que construyas hoy es la base de todo el producto.</div>
+      <div class="day-progress-bar" style="margin-top:14px;height:5px">
+        <div class="day-progress-fill" id="globalBar" style="width:0%"></div>
+      </div>
+    </div>
+    <div class="progress-ring-wrap">
+      <svg width="110" height="110" viewBox="0 0 110 110">
+        <circle class="ring-bg" cx="55" cy="55" r="46"/>
+        <circle class="ring-fill" id="ringFill" cx="55" cy="55" r="46"
+          stroke="url(#ringGrad)"
+          stroke-dasharray="289"
+          stroke-dashoffset="289"/>
+        <defs>
+          <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stop-color="#E8B84B"/>
+            <stop offset="100%" stop-color="#2DD4BF"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="ring-text">
+        <div class="ring-pct" id="ringPct">0%</div>
+        <div class="ring-lbl">completado</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS ROW -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <span class="stat-n" id="statDone" style="color:var(--green)">0</span>
+      <div class="stat-l">Completadas</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-n" id="statPending" style="color:var(--gold)">25</span>
+      <div class="stat-l">Pendientes</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-n" style="color:var(--teal)">5</span>
+      <div class="stat-l">Días</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-n" style="color:var(--purple)">~18h</span>
+      <div class="stat-l">Tiempo total</div>
+    </div>
+  </div>
+
+  <!-- DAYS -->
+  <div id="daysContainer"></div>
+
+</div>
+
+<!-- RESET -->
+<button class="reset-btn" onclick="resetAll()">↺ Reiniciar checklist</button>
+
+<!-- CELEBRATION -->
+<div class="celebration" id="celebration">
+  <div class="confetti-emoji">🎉</div>
+  <h2>¡Semana 1 completada!</h2>
+  <p>Has sentado las bases de TaricAI.<br>El KR1 está un 20% más cerca de su meta.</p>
+  <button onclick="document.getElementById('celebration').classList.remove('show')">Continuar →</button>
+</div>
+
+<script>
+// ── DATA ─────────────────────────────────────────────────────────
+const DAYS = [
+  {
+    id: 'lun',
+    name: 'Lunes',
+    theme: 'Configuración del Entorno',
+    color: '#2DD4BF',
+    emoji: '⚙️',
+    tasks: [
+      {
+        id: 'l1',
+        title: 'Crear cuentas en plataformas esenciales',
+        desc: 'Registrarse en GitHub (crea repo privado "taricai"), Anthropic Console (API de Claude), OpenAI Platform (GPT-4o Vision), Pinecone (base vectorial) y Supabase (base de datos + auth). Guarda todas las API keys en un gestor de contraseñas.',
+        tool: 'GitHub · Anthropic · OpenAI · Pinecone · Supabase',
+        time: '45 min',
+        type: 'Setup',
+        typeColor: '#2DD4BF',
+        kr: 'Base de todas las integraciones del producto',
+      },
+      {
+        id: 'l2',
+        title: 'Instalar entorno de desarrollo local',
+        desc: 'Instalar Python 3.12, Node.js 20 LTS, Docker Desktop y VS Code. Extensiones VS Code recomendadas: Python, Pylance, Docker, GitLens y REST Client. Verificar que todo corre con "python --version" y "node --version".',
+        tool: 'Python 3.12 · Node.js 20 · Docker · VS Code',
+        time: '60 min',
+        type: 'Setup',
+        typeColor: '#2DD4BF',
+        kr: 'Entorno reproducible para todo el equipo',
+      },
+      {
+        id: 'l3',
+        title: 'Crear estructura del proyecto en GitHub',
+        desc: 'Clonar repo y crear la estructura de carpetas: /backend (FastAPI), /frontend (Next.js), /scrapers (Scrapy), /data (CSVs de prueba), /notebooks (experimentación), /docs. Hacer primer commit con README.md que describa el proyecto.',
+        tool: 'Git · GitHub · VS Code',
+        time: '30 min',
+        type: 'Setup',
+        typeColor: '#2DD4BF',
+        kr: 'Proyecto organizado desde el día 1',
+      },
+      {
+        id: 'l4',
+        title: 'Configurar workspace en Notion y Linear',
+        desc: 'Notion: crear páginas para OKRs, Roadmap y notas de investigación. Linear: crear proyecto "TaricAI MVP", añadir los milestones de las 4 fases y cargar las tareas de esta semana como tickets. Conectar Linear con GitHub.',
+        tool: 'Notion · Linear',
+        time: '30 min',
+        type: 'Setup',
+        typeColor: '#2DD4BF',
+        kr: 'Sistema de tracking activo desde hoy',
+      },
+      {
+        id: 'l5',
+        title: 'Crear archivo .env con todas las API keys y probar conexiones',
+        desc: 'Crear /backend/.env con las variables: ANTHROPIC_API_KEY, OPENAI_API_KEY, PINECONE_API_KEY, SUPABASE_URL, SUPABASE_KEY. Escribir un script Python de 10 líneas que haga una llamada de prueba a la API de Claude y confirme respuesta. Nunca subas .env a GitHub — añádelo a .gitignore.',
+        tool: 'Python · .env · python-dotenv',
+        time: '25 min',
+        type: 'Desarrollo',
+        typeColor: '#3B82F6',
+        kr: 'APIs confirmadas funcionando antes de depender de ellas',
+      },
+    ]
+  },
+  {
+    id: 'mar',
+    name: 'Martes',
+    theme: 'Explorar la Fuente TARIC Oficial',
+    color: '#E8B84B',
+    emoji: '🔍',
+    tasks: [
+      {
+        id: 'm1',
+        title: 'Estudiar la estructura oficial del TARIC UE',
+        desc: 'Entra en ec.europa.eu/taxation_customs/dds2/taric y explora manualmente 10 partidas de capítulos distintos (textiles cap.61, maquinaria cap.84, alimentos cap.02). Documenta en Notion: cómo está organizado, qué campos tiene cada partida, cómo se forman los 10 dígitos, qué son las notas de capítulo y las medidas de la UE.',
+        tool: 'Browser · Notion · taric.ec.europa.eu',
+        time: '60 min',
+        type: 'Investigación',
+        typeColor: '#A78BFA',
+        kr: 'Entender la fuente antes de automatizarla',
+      },
+      {
+        id: 'm2',
+        title: 'Explorar la API pública del TARIC y documentar sus endpoints',
+        desc: 'El TARIC UE tiene endpoints REST públicos. Explora: https://ec.europa.eu/taxation_customs/dds2/taric/taric_consultation.jsp y la API de consulta. Usa Postman o el REST Client de VS Code para hacer 5 consultas reales. Documenta los parámetros, formato de respuesta (JSON/XML) y límites de tasa. Esto define si usas la API directa o scraping web.',
+        tool: 'Postman · REST Client · VS Code',
+        time: '75 min',
+        type: 'Investigación',
+        typeColor: '#A78BFA',
+        kr: 'Definir estrategia de extracción de datos TARIC',
+      },
+      {
+        id: 'm3',
+        title: 'Primer scraper: extraer el capítulo 84 completo del TARIC',
+        desc: 'Escribe un script Python usando requests + BeautifulSoup (o Scrapy si prefieres). Objetivo: extraer todas las partidas del capítulo 84 (máquinas, reactores nucleares, calderas) con sus descripciones, notas y derechos arancelarios. Guarda el resultado en /data/taric_cap84.csv. Verifica que tienes al menos 300 filas.',
+        tool: 'Python · requests · BeautifulSoup · pandas',
+        time: '90 min',
+        type: 'Desarrollo',
+        typeColor: '#3B82F6',
+        kr: 'KR2 (scraping): primera prueba de extracción automática',
+      },
+      {
+        id: 'm4',
+        title: 'Explorar CLASS de la AEAT y comparar con TARIC UE',
+        desc: 'Entra en la herramienta CLASS de la Agencia Tributaria (agenciatributaria.gob.es, busca "CLASS"). Realiza 5 consultas de clasificación manual. Documenta: qué añade CLASS vs el TARIC europeo, si hay diferencias en la descripción, si hay resoluciones vinculantes disponibles. Esta comparación definirá cómo combinas ambas fuentes.',
+        tool: 'Browser · agenciatributaria.gob.es · Notion',
+        time: '45 min',
+        type: 'Investigación',
+        typeColor: '#A78BFA',
+        kr: 'Entender diferencias UE vs España para el clasificador',
+      },
+      {
+        id: 'm5',
+        title: 'Documentar hallazgos y actualizar OKR en Notion',
+        desc: 'Escribe un resumen en Notion de todo lo aprendido hoy: estructura TARIC, endpoints disponibles, resultado del primer scraper, diferencias CLASS vs TARIC. Actualiza el % de avance del KR1 en Linear. Prepara la lista de tareas del miércoles.',
+        tool: 'Notion · Linear',
+        time: '20 min',
+        type: 'Revisión',
+        typeColor: '#22C55E',
+        kr: 'Conocimiento documentado para el equipo',
+      },
+    ]
+  },
+  {
+    id: 'mie',
+    name: 'Miércoles',
+    theme: 'Base de Datos y Primer Clasificador',
+    color: '#3B82F6',
+    emoji: '🗄️',
+    tasks: [
+      {
+        id: 'mi1',
+        title: 'Configurar PostgreSQL local con Docker y crear el esquema de datos',
+        desc: 'Crea un docker-compose.yml con PostgreSQL 16. Define el esquema inicial: tabla "partidas" (codigo_taric, descripcion, capitulo, notas, derechos_arancel, fecha_actualizacion), tabla "consultas" (id, texto_entrada, partida_resultado, confianza, usuario, fecha). Levanta el contenedor y verifica conexión con DBeaver o psql.',
+        tool: 'Docker · PostgreSQL · DBeaver',
+        time: '60 min',
+        type: 'Desarrollo',
+        typeColor: '#3B82F6',
+        kr: 'Base de datos que almacena todo el conocimiento arancelario',
+      },
+      {
+        id: 'mi2',
+        title: 'Cargar el capítulo 84 en la BBDD y ampliar scraper a 5 capítulos más',
+        desc: 'Importa el CSV del martes a PostgreSQL. Amplía el scraper para extraer también capítulos 61 (textiles), 87 (vehículos), 02 (carnes), 39 (plásticos) y 73 (hierro y acero). Cada capítulo tiene ~50-200 partidas. Al final del día debes tener >800 partidas en la BBDD con sus descripciones completas.',
+        tool: 'Python · pandas · psycopg2 · Scrapy',
+        time: '90 min',
+        type: 'Desarrollo',
+        typeColor: '#3B82F6',
+        kr: 'KR2: datos suficientes para entrenar el clasificador',
+      },
+      {
+        id: 'mi3',
+        title: 'Crear el primer clasificador por texto usando Claude API',
+        desc: 'Escribe una función Python: classify_text(descripcion: str) → dict. Internamente hace una llamada a la API de Claude con un prompt que incluye las partidas de la BBDD como contexto y pide clasificar la descripción. Devuelve: {"partida": "8471.30.00", "descripcion": "...", "confianza": 0.95, "justificacion": "..."}. Prueba con 10 descripciones manuales.',
+        tool: 'Python · Anthropic SDK · FastAPI',
+        time: '90 min',
+        type: 'Desarrollo',
+        typeColor: '#3B82F6',
+        kr: 'KR1: primer clasificador funcionando — hito clave del día',
+      },
+      {
+        id: 'mi4',
+        title: 'Crear endpoint FastAPI: POST /classify/text',
+        desc: 'Monta FastAPI en /backend/main.py. Crea el endpoint POST /classify/text que recibe {"descripcion": "ordenador portátil con pantalla de 15 pulgadas"} y devuelve la respuesta del clasificador. Añade validación con Pydantic, manejo de errores y logs. Documenta con el Swagger automático de FastAPI (/docs).',
+        tool: 'FastAPI · Pydantic · uvicorn',
+        time: '60 min',
+        type: 'Desarrollo',
+        typeColor: '#3B82F6',
+        kr: 'Primera API del producto accesible y documentada',
+      },
+      {
+        id: 'mi5',
+        title: 'Test manual del endpoint con 15 descripciones reales',
+        desc: 'Prepara 15 descripciones de mercancías reales (usa facturas o describe productos cotidianos). Envía cada una al endpoint y anota: partida devuelta, confianza, justificación y si es correcto. Registra los resultados en /data/test_clasificador_v1.csv. Objetivo del día: al menos 10 de 15 correctas (67%).',
+        tool: 'Postman · Python · CSV',
+        time: '40 min',
+        type: 'Validación',
+        typeColor: '#F97316',
+        kr: 'KR1: primera medición real de precisión del clasificador',
+      },
+    ]
+  },
+  {
+    id: 'jue',
+    name: 'Jueves',
+    theme: 'Búsqueda Semántica y Mejora del Clasificador',
+    color: '#A78BFA',
+    emoji: '🧠',
+    tasks: [
+      {
+        id: 'j1',
+        title: 'Vectorizar partidas TARIC en Pinecone para búsqueda semántica',
+        desc: 'Usa la API de OpenAI (text-embedding-3-small, muy barato) para generar embeddings de cada descripción de partida en la BBDD. Sube todos los vectores a Pinecone con metadata (codigo_taric, descripcion). Verifica que puedes hacer una búsqueda semántica: "laptop computer" debe devolver partidas del cap. 84. Esto reemplaza la búsqueda literal por comprensión semántica.',
+        tool: 'OpenAI Embeddings · Pinecone · Python',
+        time: '75 min',
+        type: 'Desarrollo',
+        typeColor: '#3B82F6',
+        kr: 'KR1: mejora crítica de precisión por búsqueda semántica',
+      },
+      {
+        id: 'j2',
+        title: 'Mejorar el clasificador: combinar búsqueda semántica + Claude',
+        desc: 'Actualiza la función classify_text() para usar un pipeline de dos pasos: (1) búsqueda semántica en Pinecone → top 5 partidas candidatas, (2) Claude analiza las 5 candidatas con la descripción y elige la más precisa con justificación. Este enfoque RAG (Retrieval-Augmented Generation) mejora drásticamente la precisión. Actualiza el endpoint.',
+        tool: 'Pinecone · Claude API · LangChain (opcional)',
+        time: '90 min',
+        type: 'Desarrollo',
+        typeColor: '#3B82F6',
+        kr: 'KR1: arquitectura definitiva del clasificador v1',
+      },
+      {
+        id: 'j3',
+        title: 'Repetir test con las 15 descripciones del miércoles + 10 nuevas',
+        desc: 'Vuelve a testear las mismas 15 del miércoles con el clasificador mejorado. Añade 10 nuevas descripciones más complejas (mercancías compuestas, productos ambiguos). Mide y compara precisión v1 vs v2. Documenta en el CSV: método, partida devuelta, correcta/incorrecta, notas de error.',
+        tool: 'Postman · Python · CSV · Notion',
+        time: '45 min',
+        type: 'Validación',
+        typeColor: '#F97316',
+        kr: 'KR1: medir mejora real de la arquitectura RAG',
+      },
+      {
+        id: 'j4',
+        title: 'Crear set de test formal con 50 partidas para benchmark continuo',
+        desc: 'Crea /data/benchmark_kr1.csv con 50 casos: descripción en texto → partida correcta esperada. Usa partidas de distintos capítulos, distintos niveles de dificultad (fácil, medio, difícil). Este archivo será el "suelo de verdad" para medir el KR1 durante toda la Fase 1. La meta final: >90% de precisión en este benchmark.',
+        tool: 'Python · pandas · CSV',
+        time: '50 min',
+        type: 'Validación',
+        typeColor: '#F97316',
+        kr: 'KR1: benchmark oficial para medir el 90% de precisión',
+      },
+      {
+        id: 'j5',
+        title: 'Correr el benchmark completo y documentar precisión actual',
+        desc: 'Ejecuta el clasificador contra los 50 casos del benchmark. Calcula: precisión total (%), tasa de error por capítulo y tipos de error más frecuentes (¿falla más en textiles? ¿en maquinaria?). Guarda el resultado en /data/resultados_benchmark_s1.json. Actualiza KR1 % en Linear. Objetivo semana 1: >70% en el benchmark.',
+        tool: 'Python · pandas · Linear',
+        time: '40 min',
+        type: 'Revisión',
+        typeColor: '#22C55E',
+        kr: 'KR1: medición oficial de la semana — punto de partida',
+      },
+    ]
+  },
+  {
+    id: 'vie',
+    name: 'Viernes',
+    theme: 'Revisión OKR y Preparación Semana 2',
+    color: '#22C55E',
+    emoji: '📊',
+    tasks: [
+      {
+        id: 'v1',
+        title: 'Revisión formal del OKR semanal (30 min)',
+        desc: 'Dedica 30 minutos sin interrupciones a revisar los KRs: ¿KR1 (precisión) en qué %? ¿KR2 (scraping activo)? Anota en Notion: qué salió bien, qué fue más difícil de lo esperado, qué bloqueos encontraste. Sé honesto — el valor del OKR está en la honestidad, no en parecer que todo va perfecto.',
+        tool: 'Notion · Linear',
+        time: '30 min',
+        type: 'Revisión',
+        typeColor: '#22C55E',
+        kr: 'Todos los KRs: tracking semanal indispensable',
+      },
+      {
+        id: 'v2',
+        title: 'Ampliar scraper TARIC a 15 capítulos más (objetivo: 3.000+ partidas)',
+        desc: 'Añade los capítulos más frecuentes en comercio exterior español: 85 (electrónica), 29 (químicos orgánicos), 30 (farmacéuticos), 94 (muebles), 64 (calzado), 62 (prendas), 22 (bebidas), 44 (madera), 48 (papel), 72 (hierro), 76 (aluminio). Automatiza con un loop sobre todos los capítulos. Meta: 3.000+ partidas en BBDD.',
+        tool: 'Scrapy · PostgreSQL · Python',
+        time: '90 min',
+        type: 'Desarrollo',
+        typeColor: '#3B82F6',
+        kr: 'KR2: cobertura amplia que mejora la precisión del clasificador',
+      },
+      {
+        id: 'v3',
+        title: 'Analizar errores del benchmark y mejorar el prompt de Claude',
+        desc: 'Revisa los casos fallidos del benchmark del jueves. Identifica patrones: ¿falla por ambigüedad del texto? ¿por capítulos poco representados en la BBDD? ¿por el prompt? Ajusta el prompt de Claude para los tipos de error más frecuentes. Usa few-shot prompting: incluye 3–5 ejemplos correctos en el prompt. Vuelve a correr el benchmark. Documenta la mejora.',
+        tool: 'Claude API · Python · Jupyter Notebook',
+        time: '75 min',
+        type: 'Desarrollo',
+        typeColor: '#3B82F6',
+        kr: 'KR1: mejora iterativa hacia el 90% de precisión',
+      },
+      {
+        id: 'v4',
+        title: 'Crear README técnico del proyecto',
+        desc: 'Documenta en /README.md: qué es TaricAI, arquitectura del clasificador (diagrama sencillo en texto ASCII está bien), cómo levantar el entorno local (instrucciones paso a paso), variables de entorno necesarias y cómo correr los tests. Un buen README permite que cualquier colaborador futuro empiece en 15 minutos.',
+        tool: 'VS Code · Markdown · GitHub',
+        time: '35 min',
+        type: 'Desarrollo',
+        typeColor: '#3B82F6',
+        kr: 'Base para escalar el equipo cuando llegue el momento',
+      },
+      {
+        id: 'v5',
+        title: 'Planning semana 2 y celebración del primer hito',
+        desc: 'Define las 5 tareas prioritarias de la semana 2 en Linear (scraper completo TARIC, vectorización masiva, clasificador imagen v1). Comparte el progreso con cualquier persona de confianza (mentor, compañero, inversor). Documenta en Notion el estado exacto del proyecto al final de la semana 1. ¡Y celebra — acabas de empezar a construir TaricAI!',
+        tool: 'Linear · Notion · Loom (opcional)',
+        time: '25 min',
+        type: 'Revisión',
+        typeColor: '#22C55E',
+        kr: 'Momentum: la constancia semanal es el verdadero KR',
+      },
+    ]
+  },
+];
+
+// ── STORAGE KEY ──────────────────────────────────────────────────
+const KEY = 'taricai_kr1_s1';
+
+// ── STATE ────────────────────────────────────────────────────────
+let state = {};
+try {
+  const saved = localStorage.getItem(KEY);
+  if (saved) state = JSON.parse(saved);
+} catch(e) {}
+
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} };
+const total = DAYS.reduce((a, d) => a + d.tasks.length, 0);
+
+// ── RENDER ────────────────────────────────────────────────────────
+function render() {
+  const container = document.getElementById('daysContainer');
+  container.innerHTML = '';
+
+  DAYS.forEach(day => {
+    const doneCount = day.tasks.filter(t => state[t.id]).length;
+    const pct = Math.round(doneCount / day.tasks.length * 100);
+
+    const section = document.createElement('div');
+    section.className = 'day-section' + (doneCount === 0 ? '' : ' open');
+    section.dataset.day = day.id;
+
+    section.innerHTML = `
+      <div class="day-header" onclick="toggleDay('${day.id}')">
+        <div class="day-dot" style="background:${doneCount===day.tasks.length?'var(--green)':day.color}"></div>
+        <div class="day-name">${day.emoji} ${day.name} — ${day.theme}</div>
+        <div class="day-meta">${doneCount}/${day.tasks.length} tareas</div>
+        <div class="day-prog" style="color:${doneCount===day.tasks.length?'var(--green)':day.color}">${pct}%</div>
+        <div class="day-chevron">▾</div>
+      </div>
+      <div class="day-progress-bar" style="border-radius:0;margin:0;height:2px">
+        <div class="day-progress-fill" style="width:${pct}%;background:${day.color}"></div>
+      </div>
+      <div class="day-body">
+        ${day.tasks.map(t => taskHTML(t, day.color)).join('')}
+      </div>
+    `;
+    container.appendChild(section);
+  });
+
+  updateProgress();
+}
+
+function taskHTML(t, color) {
+  const done = !!state[t.id];
+  return `
+    <div class="task-item${done?' done':''}" onclick="toggle('${t.id}')" id="task_${t.id}">
+      <div class="check-box">
+        <span class="check-icon">✓</span>
+      </div>
+      <div class="task-content">
+        <div class="task-header-row">
+          <div class="task-title">${t.title}</div>
+          <span class="task-badge" style="background:${t.typeColor}22;color:${t.typeColor}">${t.type}</span>
+        </div>
+        <div class="task-desc">${t.desc}</div>
+        <div class="task-meta">
+          <div class="meta-chip">🔧 <span>${t.tool}</span></div>
+          <div class="meta-chip">⏱ <span>${t.time}</span></div>
+          <div class="meta-chip">→ <span>${t.kr}</span></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggle(id) {
+  state[id] = !state[id];
+  save();
+  // Update only the clicked task
+  const el = document.getElementById('task_' + id);
+  if (el) {
+    el.classList.toggle('done', state[id]);
+  }
+  // Re-render day headers and global progress
+  DAYS.forEach(day => {
+    const doneCount = day.tasks.filter(t => state[t.id]).length;
+    const pct = Math.round(doneCount / day.tasks.length * 100);
+    const section = document.querySelector(`[data-day="${day.id}"]`);
+    if (!section) return;
+    const progEl = section.querySelector('.day-prog');
+    const dotEl  = section.querySelector('.day-dot');
+    const metaEl = section.querySelector('.day-meta');
+    const barEl  = section.querySelector('.day-body + .day-progress-bar .day-progress-fill, .day-header + .day-progress-bar .day-progress-fill');
+    if (progEl) progEl.textContent = pct + '%';
+    if (metaEl) metaEl.textContent = `${doneCount}/${day.tasks.length} tareas`;
+    if (dotEl)  dotEl.style.background = doneCount===day.tasks.length ? 'var(--green)' : day.color;
+    // update bar below header
+    const bars = section.querySelectorAll('.day-progress-fill');
+    if (bars[0]) bars[0].style.width = pct + '%';
+  });
+  updateProgress();
+  checkComplete();
+}
+
+function updateProgress() {
+  const done  = Object.values(state).filter(Boolean).length;
+  const pct   = Math.round(done / total * 100);
+  const circ  = 289;
+
+  document.getElementById('ringPct').textContent = pct + '%';
+  document.getElementById('ringFill').style.strokeDashoffset = circ - (circ * pct / 100);
+  document.getElementById('globalBar').style.width = pct + '%';
+  document.getElementById('statDone').textContent = done;
+  document.getElementById('statPending').textContent = total - done;
+}
+
+function toggleDay(id) {
+  const el = document.querySelector(`[data-day="${id}"]`);
+  if (el) el.classList.toggle('open');
+}
+
+function checkComplete() {
+  const done = Object.values(state).filter(Boolean).length;
+  if (done === total) {
+    setTimeout(() => document.getElementById('celebration').classList.add('show'), 400);
+  }
+}
+
+function resetAll() {
+  if (!confirm('¿Reiniciar todo el checklist? Se perderá el progreso.')) return;
+  state = {};
+  save();
+  render();
+}
+
+// ── INIT ──────────────────────────────────────────────────────────
+render();
+// Open first incomplete day automatically
+DAYS.forEach(day => {
+  const doneCount = day.tasks.filter(t => state[t.id]).length;
+  if (doneCount < day.tasks.length) {
+    const el = document.querySelector(`[data-day="${day.id}"]`);
+    if (el) { el.classList.add('open'); return; }
+  }
+});
+</script>
+</body>
+</html>
