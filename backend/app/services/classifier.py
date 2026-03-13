@@ -1,14 +1,17 @@
 """
-Servicio de clasificación TARIC usando Claude API.
+Servicio de clasificación TARIC usando Claude API + OpenAI fallback.
 
-Envía la descripción del producto a Claude con un prompt especializado
-en clasificación arancelaria TARIC, y devuelve sugerencias de códigos.
+Flujo:
+1. Intenta clasificar con Claude API (Anthropic)
+2. Si falla (sin créditos, error, etc.), usa OpenAI GPT-4o como fallback
+3. Opcionalmente enriquece con RAG (Pinecone) si está disponible
 """
 
 import json
 import logging
 
 import anthropic
+import openai
 
 from app.core.config import settings
 from app.schemas.classification import ClassifyResponse, TaricSuggestion
@@ -73,8 +76,8 @@ def _build_user_prompt(
     return prompt
 
 
-def _parse_claude_response(response_text: str) -> dict:
-    """Parsea la respuesta de Claude extrayendo el JSON."""
+def _parse_llm_response(response_text: str) -> dict:
+    """Parsea la respuesta del LLM extrayendo el JSON."""
     # Intentar parsear directamente
     try:
         return json.loads(response_text)
@@ -120,6 +123,32 @@ async def _get_rag_context(description: str) -> str:
         return ""
 
 
+def _call_claude(system_prompt: str, user_prompt: str) -> str:
+    """Llama a Claude API y devuelve el texto de respuesta."""
+    client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
+    message = client.messages.create(
+        model="claude-sonnet-4-20250514",
+        max_tokens=2048,
+        system=system_prompt,
+        messages=[{"role": "user", "content": user_prompt}],
+    )
+    return message.content[0].text
+
+
+def _call_openai(system_prompt: str, user_prompt: str) -> str:
+    """Llama a OpenAI GPT-4o y devuelve el texto de respuesta."""
+    client = openai.OpenAI(api_key=settings.openai_api_key)
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        max_tokens=2048,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+    )
+    return response.choices[0].message.content
+
+
 async def classify_product(
     description: str,
     origin_country: str | None = None,
@@ -127,11 +156,12 @@ async def classify_product(
 ) -> ClassifyResponse:
     """
     Clasifica un producto usando Claude API + RAG (Pinecone).
+    Si Claude falla, usa OpenAI GPT-4o como fallback.
 
     Flujo:
     1. Busca códigos similares en Pinecone (si disponible)
     2. Incluye los resultados como contexto en el prompt
-    3. Claude clasifica con el contexto enriquecido
+    3. Intenta Claude → si falla → OpenAI GPT-4o
 
     Args:
         description: Descripción del producto
@@ -141,8 +171,6 @@ async def classify_product(
     Returns:
         ClassifyResponse con las sugerencias de clasificación
     """
-    client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
-
     # Obtener contexto RAG
     rag_context = await _get_rag_context(description)
 
@@ -152,22 +180,51 @@ async def classify_product(
 
     logger.info(f"Clasificando: {description[:80]}...")
 
-    message = client.messages.create(
-        model="claude-sonnet-4-20250514",
-        max_tokens=2048,
-        system=TARIC_SYSTEM_PROMPT,
-        messages=[{"role": "user", "content": user_prompt}],
-    )
+    # Intentar Claude primero, luego OpenAI como fallback
+    response_text = None
+    source = "claude-ai"
 
-    response_text = message.content[0].text
-    logger.debug(f"Respuesta Claude: {response_text[:200]}...")
+    if settings.anthropic_api_key:
+        try:
+            response_text = _call_claude(TARIC_SYSTEM_PROMPT, user_prompt)
+            source = "claude-ai"
+            logger.info("Clasificación con Claude OK")
+        except Exception as e:
+            logger.warning(f"Claude falló ({e}), intentando OpenAI...")
+
+    if response_text is None and settings.openai_api_key:
+        try:
+            response_text = _call_openai(TARIC_SYSTEM_PROMPT, user_prompt)
+            source = "openai-gpt4o"
+            logger.info("Clasificación con OpenAI OK")
+        except Exception as e:
+            logger.error(f"OpenAI también falló: {e}")
+
+    if response_text is None:
+        return ClassifyResponse(
+            product_description=description,
+            suggestions=[
+                TaricSuggestion(
+                    code="0000000000",
+                    description="No hay servicio de IA disponible",
+                    confidence=0.0,
+                    reasoning="Ni Claude ni OpenAI pudieron procesar la solicitud. Verifica las API keys y créditos.",
+                )
+            ],
+            top_code="0000000000",
+            top_confidence=0.0,
+            notes="Error: ningún proveedor de IA disponible",
+            source="none",
+        )
+
+    if rag_context:
+        source += "+rag"
 
     # Parsear respuesta
     try:
-        parsed = _parse_claude_response(response_text)
+        parsed = _parse_llm_response(response_text)
     except (json.JSONDecodeError, ValueError) as e:
-        logger.error(f"Error parseando respuesta de Claude: {e}")
-        # Fallback: devolver respuesta raw como nota
+        logger.error(f"Error parseando respuesta: {e}")
         return ClassifyResponse(
             product_description=description,
             suggestions=[
@@ -181,7 +238,7 @@ async def classify_product(
             top_code="0000000000",
             top_confidence=0.0,
             notes=f"Error parsing: {str(e)}. Respuesta raw disponible en reasoning.",
-            source="claude-ai-error",
+            source=f"{source}-error",
         )
 
     # Construir respuesta estructurada
@@ -208,7 +265,7 @@ async def classify_product(
                 code="0000000000",
                 description="No se encontraron sugerencias",
                 confidence=0.0,
-                reasoning="Claude no devolvió sugerencias válidas",
+                reasoning="El LLM no devolvió sugerencias válidas",
             )
         ]
 
@@ -218,5 +275,5 @@ async def classify_product(
         top_code=suggestions[0].code,
         top_confidence=suggestions[0].confidence,
         notes=parsed.get("notes"),
-        source="claude-ai+rag" if rag_context else "claude-ai",
+        source=source,
     )
