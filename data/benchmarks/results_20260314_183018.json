@@ -1,0 +1,514 @@
+{
+  "summary": {
+    "total": 50,
+    "exact_match": 12,
+    "subheading_match": 26,
+    "heading_match": 9,
+    "errors": 0,
+    "exact_precision_pct": 24.0,
+    "subheading_precision_pct": 76.0,
+    "heading_precision_pct": 94.0
+  },
+  "details": [
+    {
+      "description": "Cafe colombiano tostado en grano arabica",
+      "expected": "0901210000",
+      "predicted": "0901210000",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": true,
+      "time_s": 10.8,
+      "source": "claude-ai"
+    },
+    {
+      "description": "iPhone 15 Pro Max 256GB",
+      "expected": "8517130000",
+      "predicted": "8517130000",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": true,
+      "time_s": 12.1,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Aceite de oliva virgen extra",
+      "expected": "1509100000",
+      "predicted": "1509100000",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": true,
+      "time_s": 11.1,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Televisor Samsung 55 pulgadas QLED 4K",
+      "expected": "8528720000",
+      "predicted": "8528721000",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 13.1,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Laptop gaming ASUS 16 pulgadas RTX 4070",
+      "expected": "8471300000",
+      "predicted": "8471300000",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": true,
+      "time_s": 13.7,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Zapatillas deportivas Nike Air Max",
+      "expected": "6404110000",
+      "predicted": "6404199000",
+      "confidence": 0.9,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 14.1,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Cerveza artesanal IPA en lata 330ml",
+      "expected": "2203000100",
+      "predicted": "2203000110",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 13.3,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Camiseta de algodon para hombre",
+      "expected": "6109100000",
+      "predicted": "6109100000",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": true,
+      "time_s": 11.1,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Vino tinto Rioja Reserva 750ml",
+      "expected": "2204210000",
+      "predicted": "22042110",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 16.6,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Arroz basmati en paquete de 1kg",
+      "expected": "1006300000",
+      "predicted": "1006301100",
+      "confidence": 0.9,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 12.9,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Chocolate con leche tableta 100g",
+      "expected": "1806310000",
+      "predicted": "1704901000",
+      "confidence": 0.85,
+      "heading_match": false,
+      "exact_match": false,
+      "time_s": 16.4,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Neumatico radial para coche 205/55 R16",
+      "expected": "4011100000",
+      "predicted": "4011100000",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": true,
+      "time_s": 12.5,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Tornillos de acero inoxidable M8x40",
+      "expected": "7318150000",
+      "predicted": "7318159090",
+      "confidence": 0.85,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 13.0,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Miel natural de flores",
+      "expected": "0409000000",
+      "predicted": "0409000000",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": true,
+      "time_s": 9.4,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Salmon fresco del Atlantico entero",
+      "expected": "0302140000",
+      "predicted": "0302310000",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 12.5,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Jeans de hombre pantalon vaquero azul",
+      "expected": "6203420000",
+      "predicted": "6203420090",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 15.2,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Aspirina comprimidos 500mg caja 20 unidades",
+      "expected": "3004909000",
+      "predicted": "3004905000",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 11.4,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Naranjas frescas Valencia",
+      "expected": "0805100000",
+      "predicted": "0805100010",
+      "confidence": 0.85,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 15.4,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Silla de oficina ergonomica con ruedas",
+      "expected": "9401300000",
+      "predicted": "9401301000",
+      "confidence": 0.92,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 12.6,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Panuelos de papel tissue caja 100 unidades",
+      "expected": "4818200000",
+      "predicted": "4818301000",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 14.0,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Reloj de pulsera Casio digital",
+      "expected": "9102120000",
+      "predicted": "9102210000",
+      "confidence": 0.85,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 14.0,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Auriculares bluetooth inalambricos",
+      "expected": "8518300000",
+      "predicted": "8518301095",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 12.1,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Aceite de girasol refinado 1 litro",
+      "expected": "1512191000",
+      "predicted": "1512219000",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 12.9,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Impresora laser HP multifuncion",
+      "expected": "8443321000",
+      "predicted": "8443321000",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": true,
+      "time_s": 12.8,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Juguete de peluche oso 30cm",
+      "expected": "9503004900",
+      "predicted": "9503003500",
+      "confidence": 0.92,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 13.8,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Tomate cherry fresco en bandeja",
+      "expected": "0702000000",
+      "predicted": "0702000007",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 12.3,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Cable USB-C a USB-C 1 metro",
+      "expected": "8544420000",
+      "predicted": "8544429000",
+      "confidence": 0.92,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 13.9,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Mochila de nylon para portatil 15 pulgadas",
+      "expected": "4202920000",
+      "predicted": "4202210000",
+      "confidence": 0.85,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 16.4,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Queso parmesano Reggiano curado 24 meses",
+      "expected": "0406900000",
+      "predicted": "04069013",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 13.6,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Whisky escoces single malt 12 anos 700ml",
+      "expected": "2208301100",
+      "predicted": "2208303000",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 11.6,
+      "source": "claude-ai+rag"
+    },
+    {
+      "description": "Cepillo de dientes electrico recargable",
+      "expected": "8509800000",
+      "predicted": "9603210000",
+      "confidence": 0.95,
+      "heading_match": false,
+      "exact_match": false,
+      "time_s": 12.7,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Azucar blanco refinado en bolsa 1kg",
+      "expected": "1701991000",
+      "predicted": "1701140010",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 14.8,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Gafas de sol polarizadas montura plastico",
+      "expected": "9004100000",
+      "predicted": "9004100000",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": true,
+      "time_s": 11.5,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Pila alcalina AA pack de 4",
+      "expected": "8506101800",
+      "predicted": "8506500000",
+      "confidence": 0.9,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 13.7,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Detergente liquido para lavadora 2 litros",
+      "expected": "3402200000",
+      "predicted": "3402209000",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 13.3,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Pasta espagueti de trigo duro 500g",
+      "expected": "1902190000",
+      "predicted": "19021910",
+      "confidence": 0.9,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 13.1,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Carne de vacuno congelada deshuesada",
+      "expected": "0202300000",
+      "predicted": "0202300090",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 12.4,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Crema hidratante facial 50ml",
+      "expected": "3304990000",
+      "predicted": "33049900",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 14.5,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Baldosas ceramicas para suelo 30x30cm",
+      "expected": "6908900000",
+      "predicted": "69089051",
+      "confidence": 0.92,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 15.3,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Bicicleta de montana aluminio 29 pulgadas",
+      "expected": "8712000000",
+      "predicted": "8712008500",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 12.9,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Pintura acrilica para paredes 5 litros",
+      "expected": "3209100000",
+      "predicted": "3208201019",
+      "confidence": 0.92,
+      "heading_match": false,
+      "exact_match": false,
+      "time_s": 13.3,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Memoria USB flash drive 64GB",
+      "expected": "8523510000",
+      "predicted": "8523521900",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 11.3,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Atun en conserva en aceite lata 80g",
+      "expected": "1604141600",
+      "predicted": "1604142100",
+      "confidence": 0.85,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 13.1,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Perfume eau de toilette 100ml",
+      "expected": "3303000000",
+      "predicted": "33030010",
+      "confidence": 0.95,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 11.3,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Fresa fresca en bandeja 500g",
+      "expected": "0810100000",
+      "predicted": "0810100000",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": true,
+      "time_s": 10.5,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Guantes de latex desechables caja 100",
+      "expected": "4015190000",
+      "predicted": "4015190000",
+      "confidence": 0.92,
+      "heading_match": true,
+      "exact_match": true,
+      "time_s": 13.3,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Almendras peladas naturales 250g",
+      "expected": "0802120000",
+      "predicted": "0802120000",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": true,
+      "time_s": 12.1,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Motocicleta Honda 125cc",
+      "expected": "8711200000",
+      "predicted": "8711200030",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 15.6,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Papel A4 blanco 80g paquete 500 hojas",
+      "expected": "4802560000",
+      "predicted": "48025680",
+      "confidence": 0.98,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 17.6,
+      "source": "claude-ai"
+    },
+    {
+      "description": "Clavos de acero 50mm caja 1kg",
+      "expected": "7317000000",
+      "predicted": "73170020",
+      "confidence": 0.85,
+      "heading_match": true,
+      "exact_match": false,
+      "time_s": 17.2,
+      "source": "claude-ai"
+    }
+  ]
+}
