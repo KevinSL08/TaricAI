@@ -47,4 +47,21 @@ class Settings(BaseSettings):
     }
 
 
-settings = Settings()
+def _load_settings() -> Settings:
+    """Carga settings, priorizando .env sobre variables de entorno vacias."""
+    import os
+
+    s = Settings()
+
+    # Fix: si una env var del sistema esta vacia pero .env tiene valor,
+    # recargar desde .env directamente (Claude Code pone ANTHROPIC_API_KEY='')
+    if not s.anthropic_api_key and _ENV_FILE.exists():
+        from dotenv import dotenv_values
+        env_vals = dotenv_values(_ENV_FILE)
+        if env_vals.get("ANTHROPIC_API_KEY"):
+            s.anthropic_api_key = env_vals["ANTHROPIC_API_KEY"]
+
+    return s
+
+
+settings = _load_settings()
