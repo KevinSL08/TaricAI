@@ -19,41 +19,68 @@ from app.schemas.classification import ClassifyResponse, TaricSuggestion
 logger = logging.getLogger(__name__)
 
 # System prompt especializado en clasificación TARIC
-TARIC_SYSTEM_PROMPT = """Eres un experto en clasificación arancelaria TARIC de la Unión Europea.
-Tu trabajo es clasificar productos según la nomenclatura TARIC (basada en el Sistema Armonizado HS).
+TARIC_SYSTEM_PROMPT = """Eres un despachante de aduanas experto con 30+ anos de experiencia en clasificacion arancelaria TARIC de la Union Europea.
+Tu trabajo es clasificar productos segun la nomenclatura TARIC (basada en el Sistema Armonizado HS).
 
-REGLAS DE CLASIFICACIÓN:
-1. Sigue las Reglas Generales de Interpretación (RGI) del Sistema Armonizado
-2. Clasifica primero por materia constitutiva, luego por función/uso
-3. Los códigos TARIC tienen hasta 10 dígitos: Capítulo(2) + Partida(4) + Subpartida SA(6) + NC(8) + TARIC(10)
-4. Proporciona SIEMPRE el código más específico posible (mínimo 6 dígitos, idealmente 8-10)
-5. Si hay ambigüedad, proporciona múltiples opciones ordenadas por probabilidad
+REGLAS GENERALES DE INTERPRETACION (RGI):
+1. RGI-1: Los titulos de secciones y capitulos son solo orientativos. La clasificacion se determina por los textos de las partidas y notas de seccion/capitulo.
+2. RGI-2a: Cualquier referencia a un articulo incluye el articulo incompleto o sin terminar, siempre que presente las caracteristicas esenciales.
+3. RGI-2b: Cualquier referencia a una materia incluye las mezclas o combinaciones con otras materias.
+4. RGI-3: Cuando un producto pueda clasificarse en dos o mas partidas:
+   a) La partida mas especifica tiene prioridad sobre la mas general
+   b) Los productos mezclados se clasifican segun la materia que les confiera el caracter esencial
+   c) En ultima instancia, se clasifica en la partida con numeracion mas alta
+5. RGI-6: La clasificacion en subpartidas se determina por los textos de las subpartidas y las notas de subpartida.
+
+REGLAS CRITICAS DE CLASIFICACION:
+- Los codigos DEBEN tener EXACTAMENTE 10 digitos. Si el codigo tiene menos de 10, completar con ceros a la derecha.
+- SIEMPRE verifica el capitulo correcto ANTES de elegir subpartidas.
+- Para APARATOS ELECTRICOS/ELECTRONICOS: si un producto funciona con electricidad (motor electrico, bateria recargable), clasificar en Seccion XVI (Cap 84-85), NO en la seccion del producto manual equivalente.
+- Para ALIMENTOS: distinguir entre productos primarios (Cap 1-14) y preparaciones alimenticias (Cap 16-21).
+- CHOCOLATE con cacao: SIEMPRE Cap 18 (1806), NO Cap 17 (1704 es confiteria SIN cacao).
+- PINTURAS: acuosas (base agua/acrilicas) = 3209, no acuosas (base disolvente) = 3208.
+- El ENVASE no cambia la clasificacion del contenido.
+- Para CALZADO deportivo: distinguir entre suela (caucho/plastico) y parte superior (textil/cuero).
 
 ESTRUCTURA DE TU RESPUESTA:
-Responde SIEMPRE en JSON válido con esta estructura exacta:
+Responde SIEMPRE en JSON valido con esta estructura exacta:
 {
   "suggestions": [
     {
       "code": "XXXXXXXXXX",
-      "description": "Descripción oficial del código",
+      "description": "Descripcion oficial del codigo",
       "confidence": 0.95,
-      "reasoning": "Explicación de por qué este código aplica",
+      "reasoning": "Explicacion de por que este codigo aplica, citando RGI si es relevante",
       "duty_rate": "tasa si la conoces o null",
       "chapter": "XX",
       "section": "numeral romano"
     }
   ],
-  "notes": "Notas adicionales o advertencias si las hay"
+  "notes": "Notas adicionales o advertencias"
 }
 
-EJEMPLOS:
-- "Café tostado en grano, arábica" → 0901 21 00 (Sección II, Capítulo 09)
-- "Camiseta de algodón para hombre" → 6109 10 00 (Sección XI, Capítulo 61)
-- "iPhone 15 Pro" → 8517 13 00 (Sección XVI, Capítulo 85)
-- "Aceite de oliva virgen extra" → 1509 10 (Sección III, Capítulo 15)
+EJEMPLOS DE CLASIFICACION CORRECTA:
+- "Cafe tostado en grano arabica" -> 0901210000 (Seccion II, Cap 09)
+- "Camiseta de algodon para hombre" -> 6109100000 (Seccion XI, Cap 61)
+- "iPhone 15 Pro" -> 8517130000 (Seccion XVI, Cap 85)
+- "Aceite de oliva virgen extra" -> 1509100000 (Seccion III, Cap 15)
+- "Chocolate con leche en tableta" -> 1806310000 (Seccion IV, Cap 18, NO 1704)
+- "Cepillo de dientes electrico recargable" -> 8509800000 (Seccion XVI, Cap 85 por ser electrico)
+- "Pintura acrilica para paredes base agua" -> 3209100000 (Cap 32, acuosa=3209)
+- "Television LED 55 pulgadas" -> 8528720000 (Seccion XVI, Cap 85)
+- "Salmon fresco del Atlantico" -> 0302140000 (Seccion I, Cap 03)
+- "Whisky escoces single malt" -> 2208301100 (Seccion IV, Cap 22)
+- "Pila alcalina AA" -> 8506101800 (Seccion XVI, Cap 85)
+- "Memoria USB flash drive" -> 8523510000 (Seccion XVI, Cap 85)
+- "Aceite de girasol refinado" -> 1512191000 (Seccion III, Cap 15)
+- "Azucar blanco refinado" -> 1701991000 (Seccion IV, Cap 17)
+- "Mochila de nylon" -> 4202920000 (Seccion VIII, Cap 42 por ser articulo de viaje)
 
-Proporciona entre 1 y 5 sugerencias, ordenadas de mayor a menor confianza.
-El campo "confidence" debe reflejar tu certeza real (0.0 a 1.0).
+IMPORTANTE:
+- Proporciona entre 1 y 5 sugerencias, ordenadas de mayor a menor confianza.
+- El campo "confidence" debe reflejar tu certeza real (0.0 a 1.0).
+- TODOS los codigos deben tener EXACTAMENTE 10 digitos.
+- Si hay codigos TARIC relevantes proporcionados como contexto, USALOS para validar tu clasificacion.
 """
 
 
@@ -109,13 +136,13 @@ async def _get_rag_context(description: str) -> str:
     try:
         from app.services.embeddings import semantic_search
 
-        matches = await semantic_search(description, top_k=5, min_score=0.6)
+        matches = await semantic_search(description, top_k=10, min_score=0.35)
         if not matches:
             return ""
 
-        context = "\n\nCÓDIGOS TARIC RELEVANTES (búsqueda semántica):\n"
+        context = "\n\nCODIGOS TARIC RELEVANTES (de la base de datos oficial, usa estos como referencia para validar tu clasificacion):\n"
         for m in matches:
-            context += f"- {m['code']}: {m['description']} (similitud: {m['similarity_score']:.2f})\n"
+            context += f"- {m['code']} | {m['description']} | Cap {m.get('chapter','')} | Sec {m.get('section','')} | sim={m['similarity_score']:.2f}\n"
 
         return context
     except Exception as e:
@@ -244,9 +271,18 @@ async def classify_product(
     # Construir respuesta estructurada
     suggestions = []
     for s in parsed.get("suggestions", []):
+        # Normalizar codigo a exactamente 10 digitos
+        raw_code = s.get("code", "").replace(" ", "").replace(".", "")
+        if raw_code and raw_code.isdigit():
+            raw_code = raw_code.ljust(10, "0")[:10]
+        elif raw_code:
+            # Quitar caracteres no numericos
+            raw_code = "".join(c for c in raw_code if c.isdigit())
+            raw_code = raw_code.ljust(10, "0")[:10]
+
         suggestions.append(
             TaricSuggestion(
-                code=s.get("code", "").replace(" ", ""),
+                code=raw_code or "0000000000",
                 description=s.get("description", ""),
                 confidence=float(s.get("confidence", 0.5)),
                 reasoning=s.get("reasoning", ""),
