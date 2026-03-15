@@ -1,16 +1,18 @@
 """
-Servicio de clasificación TARIC usando Claude API + OpenAI fallback.
+Servicio de clasificación TARIC con triple fallback de IA.
 
 Flujo:
-1. Intenta clasificar con Claude API (Anthropic)
-2. Si falla (sin créditos, error, etc.), usa OpenAI GPT-4o como fallback
-3. Opcionalmente enriquece con RAG (Pinecone) si está disponible
+1. Intenta clasificar con Google Gemini (GRATUITO, tier generoso)
+2. Si falla, usa Claude API (Anthropic) como fallback
+3. Si falla, usa OpenAI GPT-4o como último recurso
+4. Opcionalmente enriquece con RAG (Pinecone) si está disponible
 """
 
 import json
 import logging
 
 import anthropic
+import google.generativeai as genai
 import openai
 
 from app.core.config import settings
@@ -165,6 +167,23 @@ async def _get_rag_context(description: str) -> str:
         return ""
 
 
+def _call_gemini(system_prompt: str, user_prompt: str) -> str:
+    """Llama a Google Gemini API (GRATUITO) y devuelve el texto de respuesta."""
+    genai.configure(api_key=settings.gemini_api_key)
+    model = genai.GenerativeModel(
+        model_name="gemini-2.0-flash",
+        system_instruction=system_prompt,
+    )
+    response = model.generate_content(
+        user_prompt,
+        generation_config=genai.types.GenerationConfig(
+            max_output_tokens=2048,
+            temperature=0.2,
+        ),
+    )
+    return response.text
+
+
 def _call_claude(system_prompt: str, user_prompt: str) -> str:
     """Llama a Claude API y devuelve el texto de respuesta."""
     client = anthropic.Anthropic(api_key=settings.anthropic_api_key)
@@ -222,11 +241,21 @@ async def classify_product(
 
     logger.info(f"Clasificando: {description[:80]}...")
 
-    # Intentar Claude primero, luego OpenAI como fallback
+    # Triple fallback: Gemini (gratis) → Claude → OpenAI
     response_text = None
-    source = "claude-ai"
+    source = "none"
 
-    if settings.anthropic_api_key:
+    # 1. Google Gemini (GRATUITO - tier generoso)
+    if settings.gemini_api_key:
+        try:
+            response_text = _call_gemini(TARIC_SYSTEM_PROMPT, user_prompt)
+            source = "gemini-flash"
+            logger.info("Clasificación con Gemini OK")
+        except Exception as e:
+            logger.warning(f"Gemini falló ({e}), intentando Claude...")
+
+    # 2. Claude (Anthropic) como fallback
+    if response_text is None and settings.anthropic_api_key:
         try:
             response_text = _call_claude(TARIC_SYSTEM_PROMPT, user_prompt)
             source = "claude-ai"
@@ -234,6 +263,7 @@ async def classify_product(
         except Exception as e:
             logger.warning(f"Claude falló ({e}), intentando OpenAI...")
 
+    # 3. OpenAI GPT-4o como último recurso
     if response_text is None and settings.openai_api_key:
         try:
             response_text = _call_openai(TARIC_SYSTEM_PROMPT, user_prompt)

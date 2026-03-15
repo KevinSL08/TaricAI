@@ -174,6 +174,7 @@ async def classification_health():
 
     return {
         "status": "ok",
+        "gemini_configured": bool(settings.gemini_api_key),
         "anthropic_configured": bool(settings.anthropic_api_key),
         "openai_configured": bool(settings.openai_api_key),
         "pinecone_configured": bool(settings.pinecone_api_key),

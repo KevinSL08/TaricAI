@@ -20,6 +20,9 @@ class Settings(BaseSettings):
     # OpenAI
     openai_api_key: str = ""
 
+    # Google Gemini (tier gratuito - clasificador principal)
+    gemini_api_key: str = ""
+
     # Pinecone
     pinecone_api_key: str = ""
     pinecone_index_name: str = "taricai-embeddings"
