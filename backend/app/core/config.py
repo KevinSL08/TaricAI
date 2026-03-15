@@ -1,5 +1,6 @@
 from pathlib import Path
 
+from pydantic import Field
 from pydantic_settings import BaseSettings
 
 # Buscar .env en el root del proyecto (sube desde backend/app/core/)
@@ -34,8 +35,14 @@ class Settings(BaseSettings):
     supabase_url: str = ""
     supabase_key: str = ""
 
+    # Railway / Production database URL (overrides individual postgres_* vars)
+    database_url_override: str = Field(default="", alias="DATABASE_URL")
+
     @property
     def database_url(self) -> str:
+        # Railway provides DATABASE_URL directly
+        if self.database_url_override:
+            return self.database_url_override
         return (
             f"postgresql://{self.postgres_user}:{self.postgres_password}"
             f"@{self.postgres_host}:{self.postgres_port}/{self.postgres_db}"
@@ -44,6 +51,7 @@ class Settings(BaseSettings):
     model_config = {
         "env_file": str(_ENV_FILE) if _ENV_FILE.exists() else ".env",
         "extra": "ignore",
+        "populate_by_name": True,
     }
 
 
