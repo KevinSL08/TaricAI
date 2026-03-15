@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -19,6 +20,7 @@ import {
   ChevronUp,
   Copy,
   Check,
+  Calculator,
 } from "lucide-react";
 import { classifyProduct, type ClassifyResponse } from "@/lib/api";
 import { addToHistory } from "@/lib/store";
@@ -285,6 +287,22 @@ export default function ClassifyPage() {
                             <span className="font-medium">Seccion:</span>
                             <p className="text-muted-foreground">{s.section}</p>
                           </div>
+                        </div>
+                        <div className="pt-2">
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            render={
+                              <Link
+                                href={`/dashboard/aranceles?code=${s.code}${
+                                  country ? `&origin=${country}` : ""
+                                }`}
+                              />
+                            }
+                          >
+                            <Calculator size={14} className="mr-1.5" />
+                            Calcular aranceles
+                          </Button>
                         </div>
                       </div>
                     </div>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { PackageSearch, History, Search, Activity } from "lucide-react";
+import { PackageSearch, History, Search, Activity, Calculator } from "lucide-react";
 import { getHistory, type HistoryEntry } from "@/lib/store";
 import { checkHealth } from "@/lib/api";
 
@@ -104,7 +104,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Quick actions */}
-      <div className="grid sm:grid-cols-3 gap-4">
+      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="hover:border-blue-300 transition-colors">
           <Link href="/dashboard/classify">
             <CardHeader>
@@ -112,6 +112,18 @@ export default function DashboardPage() {
               <CardTitle className="text-lg">Clasificar producto</CardTitle>
               <CardDescription>
                 Obtener codigo TARIC de 10 digitos para un producto
+              </CardDescription>
+            </CardHeader>
+          </Link>
+        </Card>
+
+        <Card className="hover:border-blue-300 transition-colors">
+          <Link href="/dashboard/aranceles">
+            <CardHeader>
+              <Calculator size={24} className="text-blue-600 mb-2" />
+              <CardTitle className="text-lg">Calcular aranceles</CardTitle>
+              <CardDescription>
+                Aranceles, IVA y coste total de importacion
               </CardDescription>
             </CardHeader>
           </Link>

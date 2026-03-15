@@ -8,6 +8,7 @@ import {
   Search,
   History,
   PackageSearch,
+  Calculator,
   LogOut,
   Menu,
   X,
@@ -25,6 +26,11 @@ const navItems = [
     href: "/dashboard/classify",
     label: "Clasificar",
     icon: PackageSearch,
+  },
+  {
+    href: "/dashboard/aranceles",
+    label: "Aranceles",
+    icon: Calculator,
   },
   {
     href: "/dashboard/history",

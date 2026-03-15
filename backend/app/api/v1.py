@@ -14,11 +14,16 @@ from app.schemas.classification import (
     ClassifyResponse,
     ErrorResponse,
 )
+from app.schemas.duties import (
+    DutyCalculationRequest,
+    DutyCalculationResponse,
+)
 from app.services.classifier import classify_product
+from app.services.tariff_calculator import calculate_import_duties
 
 logger = logging.getLogger(__name__)
 
-router = APIRouter(prefix="/api/v1", tags=["classification"])
+router = APIRouter(prefix="/api/v1", tags=["classification", "duties"])
 
 
 @router.post(
@@ -102,6 +107,61 @@ async def semantic_search_endpoint(
 async def get_me(user: dict = Depends(require_auth)) -> UserInfo:
     """Retorna la información del usuario autenticado."""
     return UserInfo(id=user["id"], email=user["email"])
+
+
+@router.post(
+    "/calculate-duties",
+    response_model=DutyCalculationResponse,
+    responses={
+        400: {"model": ErrorResponse, "description": "Datos invalidos"},
+        404: {"model": ErrorResponse, "description": "Codigo no encontrado"},
+        500: {"model": ErrorResponse, "description": "Error interno"},
+        503: {"model": ErrorResponse, "description": "API externa no disponible"},
+    },
+    summary="Calcular aranceles de importacion",
+    description="Calcula aranceles, IVA y coste total de importacion para un codigo TARIC usando datos oficiales.",
+)
+async def calculate_duties(
+    request: DutyCalculationRequest,
+    user: Optional[dict] = Depends(get_current_user),
+) -> DutyCalculationResponse:
+    """
+    Calcula los aranceles de importacion para un codigo TARIC.
+
+    - Obtiene tipos arancelarios reales de UK Trade Tariff API
+    - Calcula arancel base segun pais de origen
+    - Aplica IVA espanol (21%, 10% o 4%)
+    - Retorna desglose completo del coste de importacion
+    """
+    try:
+        if user:
+            logger.info(f"Calculo aranceles por usuario {user['email']}")
+
+        if request.iva_type not in ("general", "reducido", "superreducido"):
+            raise HTTPException(
+                status_code=400,
+                detail="iva_type debe ser: general, reducido o superreducido",
+            )
+
+        result = await calculate_import_duties(
+            commodity_code=request.commodity_code,
+            origin_country=request.origin_country,
+            customs_value_eur=request.customs_value_eur,
+            weight_kg=request.weight_kg,
+            iva_type=request.iva_type,
+        )
+        return DutyCalculationResponse(**result)
+
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except RuntimeError as e:
+        raise HTTPException(status_code=503, detail=str(e))
+    except Exception as e:
+        logger.error(f"Error en calculo de aranceles: {e}", exc_info=True)
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error interno en el calculo: {str(e)}",
+        )
 
 
 @router.get(
