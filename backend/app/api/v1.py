@@ -133,16 +133,16 @@ async def calculate_duties(
     - Aplica IVA espanol (21%, 10% o 4%)
     - Retorna desglose completo del coste de importacion
     """
+    if user:
+        logger.info(f"Calculo aranceles por usuario {user['email']}")
+
+    if request.iva_type not in ("general", "reducido", "superreducido"):
+        raise HTTPException(
+            status_code=400,
+            detail="iva_type debe ser: general, reducido o superreducido",
+        )
+
     try:
-        if user:
-            logger.info(f"Calculo aranceles por usuario {user['email']}")
-
-        if request.iva_type not in ("general", "reducido", "superreducido"):
-            raise HTTPException(
-                status_code=400,
-                detail="iva_type debe ser: general, reducido o superreducido",
-            )
-
         result = await calculate_import_duties(
             commodity_code=request.commodity_code,
             origin_country=request.origin_country,

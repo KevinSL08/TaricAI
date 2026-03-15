@@ -3,9 +3,10 @@
   "configurations": [
     {
       "name": "backend",
-      "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"],
-      "port": 8000
+      "runtimeExecutable": "C:/Users/Kevin/AppData/Local/Programs/Python/Python312/python.exe",
+      "runtimeArgs": ["-m", "uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8001"],
+      "port": 8001,
+      "cwd": "backend"
     },
     {
       "name": "frontend",
