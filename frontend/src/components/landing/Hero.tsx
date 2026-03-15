@@ -13,7 +13,7 @@ export function Hero() {
 
         <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-foreground max-w-4xl mx-auto">
           Clasificacion arancelaria{" "}
-          <span className="text-blue-600">TARIC</span> con{" "}
+          <span className="text-blue-600 dark:text-blue-400">TARIC</span> con{" "}
           <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
             Inteligencia Artificial
           </span>

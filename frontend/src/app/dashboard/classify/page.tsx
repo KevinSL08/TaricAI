@@ -21,6 +21,8 @@ import {
   Copy,
   Check,
   Calculator,
+  AlertCircle,
+  RefreshCw,
 } from "lucide-react";
 import { classifyProduct, type ClassifyResponse } from "@/lib/api";
 import { addToHistory } from "@/lib/store";
@@ -150,9 +152,27 @@ export default function ClassifyPage() {
       </Card>
 
       {error && (
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30">
           <CardContent className="pt-6">
-            <p className="text-red-700 text-sm">{error}</p>
+            <div className="flex items-start gap-3">
+              <AlertCircle size={20} className="text-red-600 dark:text-red-400 mt-0.5 shrink-0" />
+              <div className="flex-1">
+                <p className="font-medium text-red-800 dark:text-red-300">
+                  Error al clasificar
+                </p>
+                <p className="text-sm text-red-700 dark:text-red-400 mt-1">{error}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleClassify}
+                  className="mt-3"
+                  disabled={loading}
+                >
+                  <RefreshCw size={14} className="mr-1.5" />
+                  Reintentar
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       )}
@@ -160,26 +180,26 @@ export default function ClassifyPage() {
       {result && (
         <div className="space-y-4">
           {/* Top result */}
-          <Card className="border-green-200 bg-green-50">
+          <Card className="border-green-200 dark:border-green-900/50 bg-green-50 dark:bg-green-950/30">
             <CardContent className="pt-6">
               <div className="flex items-start justify-between flex-wrap gap-4">
                 <div>
-                  <p className="text-sm font-medium text-green-700">
+                  <p className="text-sm font-medium text-green-700 dark:text-green-400">
                     Codigo TARIC recomendado
                   </p>
                   <div className="flex items-center gap-3 mt-2">
-                    <p className="text-3xl font-mono font-bold text-green-900">
+                    <p className="text-3xl font-mono font-bold text-green-900 dark:text-green-200">
                       {result.top_code}
                     </p>
                     <button
                       onClick={() => copyCode(result.top_code)}
-                      className="p-1.5 hover:bg-green-200 rounded transition-colors"
+                      className="p-1.5 hover:bg-green-200 dark:hover:bg-green-800/50 rounded transition-colors"
                       title="Copiar codigo"
                     >
                       {copied === result.top_code ? (
-                        <Check size={18} className="text-green-700" />
+                        <Check size={18} className="text-green-700 dark:text-green-400" />
                       ) : (
-                        <Copy size={18} className="text-green-700" />
+                        <Copy size={18} className="text-green-700 dark:text-green-400" />
                       )}
                     </button>
                   </div>
@@ -313,9 +333,9 @@ export default function ClassifyPage() {
           </Card>
 
           {result.notes && (
-            <Card className="border-amber-200 bg-amber-50">
+            <Card className="border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/30">
               <CardContent className="pt-6">
-                <p className="text-sm text-amber-800">
+                <p className="text-sm text-amber-800 dark:text-amber-300">
                   <span className="font-medium">Nota:</span> {result.notes}
                 </p>
               </CardContent>

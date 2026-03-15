@@ -111,7 +111,7 @@ export function ClassifierDemo() {
                 <button
                   key={ex}
                   onClick={() => setDescription(ex)}
-                  className="text-xs text-blue-600 hover:text-blue-800 hover:underline"
+                  className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline"
                 >
                   {ex}
                 </button>
@@ -120,20 +120,20 @@ export function ClassifierDemo() {
           </div>
 
           {error && (
-            <div className="mt-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+            <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
               {error}
             </div>
           )}
 
           {result && (
             <div className="mt-6 space-y-4">
-              <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+              <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                   <div>
-                    <p className="text-sm text-green-700 font-medium">
+                    <p className="text-sm text-green-700 dark:text-green-400 font-medium">
                       Codigo TARIC recomendado
                     </p>
-                    <p className="text-2xl font-mono font-bold text-green-900 mt-1">
+                    <p className="text-2xl font-mono font-bold text-green-900 dark:text-green-300 mt-1">
                       {result.top_code}
                     </p>
                   </div>

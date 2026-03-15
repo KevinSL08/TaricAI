@@ -12,9 +12,12 @@ import {
   LogOut,
   Menu,
   X,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useTheme } from "@/components/providers/ThemeProvider";
 
 const navItems = [
   {
@@ -48,12 +51,13 @@ export function Sidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, signOut } = useAuth();
+  const { resolvedTheme, toggleTheme } = useTheme();
 
   return (
     <>
       {/* Mobile toggle */}
       <button
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white border border-border rounded-lg shadow-sm"
+        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-card border border-border rounded-lg shadow-sm"
         onClick={() => setMobileOpen(!mobileOpen)}
       >
         {mobileOpen ? <X size={20} /> : <Menu size={20} />}
@@ -70,18 +74,18 @@ export function Sidebar() {
       {/* Sidebar */}
       <aside
         className={cn(
-          "fixed top-0 left-0 z-40 h-screen w-64 bg-white border-r border-border flex flex-col transition-transform lg:translate-x-0",
+          "fixed top-0 left-0 z-40 h-screen w-64 bg-card border-r border-border flex flex-col transition-transform duration-200 lg:translate-x-0",
           mobileOpen ? "translate-x-0" : "-translate-x-full"
         )}
       >
         {/* Logo */}
         <div className="h-16 flex items-center px-6 border-b border-border">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">T</span>
+            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+              <span className="text-white font-bold text-sm">T</span>
             </div>
-            <span className="font-bold text-lg">
-              Taric<span className="text-blue-600">AI</span>
+            <span className="font-bold text-lg text-foreground">
+              Taric<span className="text-blue-600 dark:text-blue-400">AI</span>
             </span>
           </Link>
         </div>
@@ -102,7 +106,7 @@ export function Sidebar() {
                 className={cn(
                   "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                   isActive
-                    ? "bg-blue-50 text-blue-700"
+                    ? "bg-blue-600/10 text-blue-700 dark:text-blue-400"
                     : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
               >
@@ -113,8 +117,17 @@ export function Sidebar() {
           })}
         </nav>
 
-        {/* User info & logout */}
+        {/* Bottom: theme + user + logout */}
         <div className="px-3 py-4 border-t border-border space-y-1">
+          <button
+            onClick={toggleTheme}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors w-full"
+            title={resolvedTheme === "dark" ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
+          >
+            {resolvedTheme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            {resolvedTheme === "dark" ? "Modo claro" : "Modo oscuro"}
+          </button>
+
           {user && (
             <div className="px-3 py-2">
               <p className="text-xs text-muted-foreground truncate">

@@ -38,8 +38,8 @@ export function Solution() {
         <div className="grid md:grid-cols-3 gap-8">
           {steps.map((step, i) => (
             <div key={step.title} className="text-center">
-              <div className="w-16 h-16 bg-blue-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                <step.icon size={32} className="text-blue-600" />
+              <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <step.icon size={32} className="text-blue-600 dark:text-blue-400" />
               </div>
               <div className="text-sm font-medium text-blue-600 mb-2">
                 Paso {i + 1}
@@ -79,7 +79,7 @@ export function Solution() {
 function Feature({ text }: { text: string }) {
   return (
     <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-      <CheckCircle size={14} className="text-green-500 shrink-0" />
+      <CheckCircle size={14} className="text-green-500 dark:text-green-400 shrink-0" />
       <span>{text}</span>
     </div>
   );

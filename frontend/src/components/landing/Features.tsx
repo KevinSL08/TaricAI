@@ -79,8 +79,8 @@ export function Features() {
                 </div>
               )}
               <CardHeader>
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-2">
-                  <feature.icon size={24} className="text-blue-600" />
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center mb-2">
+                  <feature.icon size={24} className="text-blue-600 dark:text-blue-400" />
                 </div>
                 <CardTitle className="text-lg">{feature.title}</CardTitle>
                 <CardDescription>{feature.description}</CardDescription>

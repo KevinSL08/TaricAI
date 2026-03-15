@@ -45,8 +45,8 @@ export default function DashboardPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <PackageSearch size={20} className="text-blue-600" />
+              <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
+                <PackageSearch size={20} className="text-blue-600 dark:text-blue-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{history.length}</p>
@@ -59,8 +59,8 @@ export default function DashboardPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <Activity size={20} className="text-green-600" />
+              <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-lg flex items-center justify-center">
+                <Activity size={20} className="text-green-600 dark:text-green-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold">
@@ -75,8 +75,8 @@ export default function DashboardPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <Search size={20} className="text-purple-600" />
+              <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                <Search size={20} className="text-purple-600 dark:text-purple-400" />
               </div>
               <div>
                 <p className="text-2xl font-bold">16,457</p>
@@ -89,7 +89,7 @@ export default function DashboardPage() {
         <Card>
           <CardContent className="pt-6">
             <div className="flex items-center gap-3">
-              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${health?.status === "ok" ? "bg-green-100" : "bg-red-100"}`}>
+              <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${health?.status === "ok" ? "bg-green-100 dark:bg-green-900/30" : "bg-red-100 dark:bg-red-900/30"}`}>
                 <div className={`w-3 h-3 rounded-full ${health?.status === "ok" ? "bg-green-500" : "bg-red-500"}`} />
               </div>
               <div>
@@ -105,10 +105,10 @@ export default function DashboardPage() {
 
       {/* Quick actions */}
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="hover:border-blue-300 transition-colors">
+        <Card className="hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
           <Link href="/dashboard/classify">
             <CardHeader>
-              <PackageSearch size={24} className="text-blue-600 mb-2" />
+              <PackageSearch size={24} className="text-blue-600 dark:text-blue-400 mb-2" />
               <CardTitle className="text-lg">Clasificar producto</CardTitle>
               <CardDescription>
                 Obtener codigo TARIC de 10 digitos para un producto
@@ -117,10 +117,10 @@ export default function DashboardPage() {
           </Link>
         </Card>
 
-        <Card className="hover:border-blue-300 transition-colors">
+        <Card className="hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
           <Link href="/dashboard/aranceles">
             <CardHeader>
-              <Calculator size={24} className="text-blue-600 mb-2" />
+              <Calculator size={24} className="text-blue-600 dark:text-blue-400 mb-2" />
               <CardTitle className="text-lg">Calcular aranceles</CardTitle>
               <CardDescription>
                 Aranceles, IVA y coste total de importacion
@@ -129,10 +129,10 @@ export default function DashboardPage() {
           </Link>
         </Card>
 
-        <Card className="hover:border-blue-300 transition-colors">
+        <Card className="hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
           <Link href="/dashboard/history">
             <CardHeader>
-              <History size={24} className="text-blue-600 mb-2" />
+              <History size={24} className="text-blue-600 dark:text-blue-400 mb-2" />
               <CardTitle className="text-lg">Ver historial</CardTitle>
               <CardDescription>
                 Consultar clasificaciones anteriores
@@ -141,10 +141,10 @@ export default function DashboardPage() {
           </Link>
         </Card>
 
-        <Card className="hover:border-blue-300 transition-colors">
+        <Card className="hover:border-blue-300 dark:hover:border-blue-700 transition-colors">
           <Link href="/dashboard/search">
             <CardHeader>
-              <Search size={24} className="text-blue-600 mb-2" />
+              <Search size={24} className="text-blue-600 dark:text-blue-400 mb-2" />
               <CardTitle className="text-lg">Buscar TARIC</CardTitle>
               <CardDescription>
                 Buscar codigos en la nomenclatura combinada

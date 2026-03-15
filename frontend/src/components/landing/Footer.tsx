@@ -11,7 +11,7 @@ export function Footer() {
                 <span className="text-primary-foreground font-bold text-sm">T</span>
               </div>
               <span className="font-bold text-lg">
-                Taric<span className="text-blue-600">AI</span>
+                Taric<span className="text-blue-600 dark:text-blue-400">AI</span>
               </span>
             </div>
             <p className="text-sm text-muted-foreground">

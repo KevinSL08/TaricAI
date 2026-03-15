@@ -71,11 +71,11 @@ export function Pricing() {
             <Card
               key={plan.name}
               className={`relative p-8 flex flex-col ${
-                plan.popular ? "border-blue-600 border-2 shadow-lg" : ""
+                plan.popular ? "border-blue-600 dark:border-blue-400 border-2 shadow-lg" : ""
               }`}
             >
               {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600">
+                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 dark:bg-blue-500">
                   Mas popular
                 </Badge>
               )}
@@ -97,7 +97,7 @@ export function Pricing() {
               <ul className="mt-8 space-y-3 flex-1">
                 {plan.features.map((feature) => (
                   <li key={feature} className="flex items-start gap-3">
-                    <Check size={18} className="text-green-500 shrink-0 mt-0.5" />
+                    <Check size={18} className="text-green-500 dark:text-green-400 shrink-0 mt-0.5" />
                     <span className="text-sm text-foreground">{feature}</span>
                   </li>
                 ))}

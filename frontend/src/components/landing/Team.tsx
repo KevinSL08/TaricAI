@@ -50,7 +50,7 @@ export function Team() {
               <h3 className="text-lg font-semibold text-foreground">
                 {member.name}
               </h3>
-              <p className="text-sm text-blue-600 font-medium">{member.role}</p>
+              <p className="text-sm text-blue-600 dark:text-blue-400 font-medium">{member.role}</p>
               <p className="mt-2 text-sm text-muted-foreground">
                 {member.description}
               </p>

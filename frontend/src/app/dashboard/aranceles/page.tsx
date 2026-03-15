@@ -20,6 +20,7 @@ import {
   ChevronUp,
   Info,
   Euro,
+  RefreshCw,
 } from "lucide-react";
 import {
   calculateDuties,
@@ -223,15 +224,25 @@ function ArancelesContent() {
 
       {/* Error */}
       {error && (
-        <Card className="border-red-200 bg-red-50">
+        <Card className="border-red-200 dark:border-red-900/50 bg-red-50 dark:bg-red-950/30">
           <CardContent className="pt-6">
             <div className="flex items-start gap-3">
-              <AlertCircle size={20} className="text-red-600 mt-0.5" />
-              <div>
-                <p className="font-medium text-red-800">
+              <AlertCircle size={20} className="text-red-600 dark:text-red-400 mt-0.5 shrink-0" />
+              <div className="flex-1">
+                <p className="font-medium text-red-800 dark:text-red-300">
                   Error al calcular aranceles
                 </p>
-                <p className="text-sm text-red-700 mt-1">{error}</p>
+                <p className="text-sm text-red-700 dark:text-red-400 mt-1">{error}</p>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCalculate}
+                  className="mt-3"
+                  disabled={loading}
+                >
+                  <RefreshCw size={14} className="mr-1.5" />
+                  Reintentar
+                </Button>
               </div>
             </div>
           </CardContent>
@@ -242,18 +253,18 @@ function ArancelesContent() {
       {result && (
         <div className="space-y-4">
           {/* Total highlight */}
-          <Card className="border-green-200 bg-green-50">
+          <Card className="border-green-200 dark:border-green-900/50 bg-green-50 dark:bg-green-950/30">
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-green-700 font-medium">
+                  <p className="text-sm text-green-700 dark:text-green-400 font-medium">
                     Coste total de importacion
                   </p>
-                  <p className="text-3xl font-bold text-green-800 mt-1">
+                  <p className="text-3xl font-bold text-green-800 dark:text-green-200 mt-1">
                     {formatEur(result.total_import_cost_eur)}
                   </p>
                 </div>
-                <Euro size={40} className="text-green-300" />
+                <Euro size={40} className="text-green-300 dark:text-green-700" />
               </div>
             </CardContent>
           </Card>
@@ -290,7 +301,7 @@ function ArancelesContent() {
                       {result.duty_rate}
                     </Badge>
                   </div>
-                  <span className="font-medium text-amber-700">
+                  <span className="font-medium text-amber-700 dark:text-amber-400">
                     + {formatEur(result.duty_amount_eur)}
                   </span>
                 </div>
@@ -318,7 +329,7 @@ function ArancelesContent() {
                         : `(${result.iva_type})`}
                     </Badge>
                   </div>
-                  <span className="font-medium text-amber-700">
+                  <span className="font-medium text-amber-700 dark:text-amber-400">
                     + {formatEur(result.iva_amount_eur)}
                   </span>
                 </div>
@@ -328,7 +339,7 @@ function ArancelesContent() {
                 {/* Total */}
                 <div className="flex justify-between items-center py-2">
                   <span className="font-bold text-lg">TOTAL</span>
-                  <span className="font-bold text-lg text-green-700">
+                  <span className="font-bold text-lg text-green-700 dark:text-green-400">
                     {formatEur(result.total_import_cost_eur)}
                   </span>
                 </div>
@@ -368,7 +379,7 @@ function ArancelesContent() {
                 <div className="pt-4">
                   <button
                     onClick={() => setShowAllMeasures(!showAllMeasures)}
-                    className="flex items-center gap-1 text-sm text-blue-600 hover:text-blue-800"
+                    className="flex items-center gap-1 text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
                   >
                     {showAllMeasures ? (
                       <ChevronUp size={16} />
@@ -405,13 +416,13 @@ function ArancelesContent() {
 
           {/* Notes */}
           {result.notes && (
-            <Card className="border-amber-200 bg-amber-50">
+            <Card className="border-amber-200 dark:border-amber-900/50 bg-amber-50 dark:bg-amber-950/30">
               <CardContent className="pt-6">
                 <div className="flex items-start gap-3">
-                  <Info size={20} className="text-amber-600 mt-0.5" />
+                  <Info size={20} className="text-amber-600 dark:text-amber-400 mt-0.5" />
                   <div>
-                    <p className="font-medium text-amber-800">Nota</p>
-                    <p className="text-sm text-amber-700 mt-1">
+                    <p className="font-medium text-amber-800 dark:text-amber-300">Nota</p>
+                    <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
                       {result.notes}
                     </p>
                   </div>

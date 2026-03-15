@@ -3,8 +3,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useTheme } from "@/components/providers/ThemeProvider";
 
 const navLinks = [
   { href: "#features", label: "Funcionalidades" },
@@ -16,9 +17,10 @@ const navLinks = [
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const { user, loading } = useAuth();
+  const { resolvedTheme, toggleTheme } = useTheme();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <a href="#" className="flex items-center gap-2">
@@ -40,6 +42,13 @@ export function Navbar() {
                 {link.label}
               </a>
             ))}
+            <button
+              onClick={toggleTheme}
+              className="p-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+              title={resolvedTheme === "dark" ? "Modo claro" : "Modo oscuro"}
+            >
+              {resolvedTheme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
             {!loading && (
               user ? (
                 <Button render={<Link href="/dashboard" />}>
@@ -71,7 +80,7 @@ export function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden border-t border-border bg-white px-4 py-4 space-y-3">
+        <div className="md:hidden border-t border-border bg-background px-4 py-4 space-y-3">
           {navLinks.map((link) => (
             <a
               key={link.href}

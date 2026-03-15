@@ -39,10 +39,10 @@ export function Problem() {
           {problems.map((problem) => (
             <div
               key={problem.title}
-              className="bg-white rounded-xl p-8 border border-border shadow-sm"
+              className="bg-card rounded-xl p-8 border border-border shadow-sm"
             >
-              <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mb-4">
-                <problem.icon size={24} className="text-red-600" />
+              <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-lg flex items-center justify-center mb-4">
+                <problem.icon size={24} className="text-red-600 dark:text-red-400" />
               </div>
               <h3 className="text-xl font-semibold text-foreground mb-2">
                 {problem.title}
