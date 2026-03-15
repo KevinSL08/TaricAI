@@ -2,112 +2,93 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
-import { Menu, X, Sun, Moon } from "lucide-react";
-import { useAuth } from "@/components/auth/AuthProvider";
-import { useTheme } from "@/components/providers/ThemeProvider";
+import { motion } from "motion/react";
+import { Ship, LogIn, Menu, X } from "lucide-react";
 
 const navLinks = [
-  { href: "#features", label: "Funcionalidades" },
-  { href: "#demo", label: "Demo" },
-  { href: "#pricing", label: "Precios" },
-  { href: "#team", label: "Equipo" },
+  { label: "Producto", href: "#features" },
+  { label: "Demo", href: "#demo" },
+  { label: "Precios", href: "#pricing" },
+  { label: "Equipo", href: "#team" },
 ];
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, loading } = useAuth();
-  const { resolvedTheme, toggleTheme } = useTheme();
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          <a href="#" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">T</span>
-            </div>
-            <span className="font-bold text-xl">
-              Taric<span className="text-blue-600">AI</span>
-            </span>
-          </a>
-
-          <div className="hidden md:flex items-center gap-8">
-            {navLinks.map((link) => (
-              <a
-                key={link.href}
-                href={link.href}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
-            <button
-              onClick={toggleTheme}
-              className="p-2 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-              title={resolvedTheme === "dark" ? "Modo claro" : "Modo oscuro"}
-            >
-              {resolvedTheme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
-            </button>
-            {!loading && (
-              user ? (
-                <Button render={<Link href="/dashboard" />}>
-                  Ir al Dashboard
-                </Button>
-              ) : (
-                <div className="flex items-center gap-3">
-                  <Link
-                    href="/login"
-                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    Iniciar sesion
-                  </Link>
-                  <Button render={<Link href="/signup" />}>
-                    Registrate
-                  </Button>
-                </div>
-              )
-            )}
+    <nav className="fixed top-0 left-0 right-0 z-50 glass-panel border-b border-outline-variant">
+      <div className="px-6 h-16 flex items-center justify-between max-w-7xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          className="flex items-center gap-3"
+        >
+          <div className="w-8 h-8 bg-cyan/20 rounded-lg flex items-center justify-center border border-cyan/30">
+            <Ship className="w-5 h-5 text-cyan" />
           </div>
+          <Link href="/" className="font-bold text-xl tracking-tighter text-glow">
+            Taric<span className="text-cyan">AI</span>
+          </Link>
+        </motion.div>
 
-          <button
-            className="md:hidden"
-            onClick={() => setMobileOpen(!mobileOpen)}
-          >
-            {mobileOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
-        </div>
-      </div>
-
-      {mobileOpen && (
-        <div className="md:hidden border-t border-border bg-background px-4 py-4 space-y-3">
+        {/* Desktop */}
+        <div className="hidden md:flex items-center gap-8">
           {navLinks.map((link) => (
             <a
-              key={link.href}
+              key={link.label}
               href={link.href}
-              className="block text-sm text-muted-foreground hover:text-foreground"
-              onClick={() => setMobileOpen(false)}
+              className="text-[11px] font-bold text-on-surface/60 hover:text-cyan transition-colors uppercase tracking-[0.2em]"
             >
               {link.label}
             </a>
           ))}
-          {!loading && (
-            user ? (
-              <Button className="w-full" render={<Link href="/dashboard" />}>
-                Ir al Dashboard
-              </Button>
-            ) : (
-              <div className="space-y-2">
-                <Button variant="outline" className="w-full" render={<Link href="/login" />}>
-                  Iniciar sesion
-                </Button>
-                <Button className="w-full" render={<Link href="/signup" />}>
-                  Registrate
-                </Button>
-              </div>
-            )
-          )}
+          <Link href="/login">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="flex items-center gap-2 bg-cyan/10 px-5 py-2 rounded-full border border-cyan/20 text-xs font-bold text-cyan hover:bg-cyan/20 transition-all"
+            >
+              <LogIn className="w-4 h-4" />
+              ACCESO
+            </motion.button>
+          </Link>
         </div>
+
+        {/* Mobile toggle */}
+        <button
+          className="md:hidden text-on-surface/70"
+          onClick={() => setMobileOpen(!mobileOpen)}
+        >
+          {mobileOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+      </div>
+
+      {/* Mobile menu */}
+      {mobileOpen && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="md:hidden glass-panel border-b border-outline-variant px-6 py-4 space-y-4"
+        >
+          {navLinks.map((link) => (
+            <a
+              key={link.label}
+              href={link.href}
+              onClick={() => setMobileOpen(false)}
+              className="block text-sm font-bold text-on-surface/60 hover:text-cyan uppercase tracking-widest"
+            >
+              {link.label}
+            </a>
+          ))}
+          <Link
+            href="/login"
+            onClick={() => setMobileOpen(false)}
+            className="flex items-center gap-2 text-cyan text-sm font-bold"
+          >
+            <LogIn className="w-4 h-4" />
+            ACCESO
+          </Link>
+        </motion.div>
       )}
     </nav>
   );

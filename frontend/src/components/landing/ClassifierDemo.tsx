@@ -1,231 +1,211 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Loader2, Search, ChevronDown, ChevronUp } from "lucide-react";
-import { classifyProduct, type ClassifyResponse } from "@/lib/api";
+import { motion, AnimatePresence } from "motion/react";
+import { Send, Sparkles, Loader2, ArrowRight, CheckCircle } from "lucide-react";
 
-const examples = [
-  "Cafe tostado en grano arabica de Colombia",
-  "Camiseta de algodon para hombre talla M",
-  "Aceite de oliva virgen extra 5 litros",
-  "Smartphone Samsung Galaxy 128GB",
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+const quickExamples = [
+  "Aceite de oliva virgen extra en botella de vidrio de 750ml",
+  "Camiseta de algodón 100% para hombre",
+  "Tornillos de acero inoxidable M8",
   "Vino tinto Rioja reserva 2019",
 ];
 
-export function ClassifierDemo() {
-  const [description, setDescription] = useState("");
-  const [country, setCountry] = useState("");
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState<ClassifyResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [expanded, setExpanded] = useState<number | null>(null);
+interface ClassifyResult {
+  taric_code: string;
+  description: string;
+  confidence: number;
+  section?: string;
+  chapter?: string;
+}
 
-  async function handleClassify() {
-    if (!description.trim() || description.trim().length < 5) return;
+export function ClassifierDemo() {
+  const [input, setInput] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<ClassifyResult | null>(null);
+  const [error, setError] = useState("");
+
+  const handleClassify = async (text?: string) => {
+    const query = text || input;
+    if (!query.trim()) return;
+
     setLoading(true);
-    setError(null);
     setResult(null);
+    setError("");
+    if (text) setInput(text);
 
     try {
-      const res = await classifyProduct({
-        description: description.trim(),
-        origin_country: country.trim() || undefined,
+      const res = await fetch(`${API_URL}/api/v1/classify`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ description: query, origin_country: "CN" }),
       });
-      setResult(res);
-    } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Error al clasificar. Verifica que el backend este activo."
-      );
+
+      if (!res.ok) throw new Error("Error en la clasificación");
+
+      const data = await res.json();
+      setResult(data);
+    } catch {
+      setError("No se pudo conectar con el clasificador. Verifica que el API esté activo.");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <section id="demo" className="py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-            Prueba la clasificacion en vivo
-          </h2>
-          <p className="mt-4 text-lg text-muted-foreground">
-            Describe un producto y obtendras su codigo TARIC en segundos.
-          </p>
-        </div>
-
-        <Card className="p-6 sm:p-8">
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1.5 block">
-                Descripcion del producto
-              </label>
-              <Textarea
-                placeholder="Ej: Cafe tostado en grano arabica de Colombia"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                rows={3}
-                className="resize-none"
-              />
+    <section id="demo" className="px-6 py-24 max-w-7xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.98 }}
+        whileInView={{ opacity: 1, scale: 1 }}
+        viewport={{ once: true }}
+        className="bg-surface/30 backdrop-blur-md p-6 sm:p-10 rounded-[3rem] border border-outline-variant shadow-2xl relative overflow-hidden"
+      >
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 mb-10">
+          <div className="space-y-1">
+            <span className="text-[10px] font-black text-cyan uppercase tracking-[0.3em]">
+              DEMO EN VIVO
+            </span>
+            <h3 className="text-3xl font-black tracking-tighter">
+              Clasificador TARIC
+            </h3>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="text-right hidden sm:block">
+              <div className="text-[10px] font-bold text-on-surface/40 uppercase">
+                Status
+              </div>
+              <div className="text-xs font-black text-green-400">OPERATIVO</div>
             </div>
-
-            <div>
-              <label className="text-sm font-medium text-foreground mb-1.5 block">
-                Pais de origen (opcional)
-              </label>
-              <Input
-                placeholder="Ej: CO, CN, US, DE"
-                value={country}
-                onChange={(e) => setCountry(e.target.value.toUpperCase().slice(0, 2))}
-                maxLength={2}
-                className="max-w-[120px]"
-              />
-            </div>
-
-            <Button
-              onClick={handleClassify}
-              disabled={loading || description.trim().length < 5}
-              className="w-full sm:w-auto"
-              size="lg"
-            >
-              {loading ? (
-                <>
-                  <Loader2 size={18} className="mr-2 animate-spin" />
-                  Clasificando...
-                </>
-              ) : (
-                <>
-                  <Search size={18} className="mr-2" />
-                  Clasificar
-                </>
-              )}
-            </Button>
-
-            <div className="flex flex-wrap gap-2 pt-2">
-              <span className="text-xs text-muted-foreground">Ejemplos:</span>
-              {examples.map((ex) => (
-                <button
-                  key={ex}
-                  onClick={() => setDescription(ex)}
-                  className="text-xs text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline"
-                >
-                  {ex}
-                </button>
-              ))}
+            <div className="w-12 h-12 bg-surface-bright rounded-2xl flex items-center justify-center border border-outline-variant">
+              <Sparkles className="w-6 h-6 text-cyan" />
             </div>
           </div>
+        </div>
 
-          {error && (
-            <div className="mt-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg text-red-700 dark:text-red-400 text-sm">
-              {error}
-            </div>
-          )}
+        {/* Input Area */}
+        <div className="space-y-6">
+          <div className="relative">
+            <textarea
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleClassify();
+                }
+              }}
+              placeholder="Describe la mercancía a clasificar... Ej: Aceite de oliva virgen extra en botella de vidrio"
+              rows={3}
+              className="w-full bg-background/50 border border-outline-variant rounded-2xl py-4 px-6 pr-16 text-sm focus:outline-none focus:border-cyan/50 transition-all resize-none placeholder:text-on-surface/30"
+            />
+            <button
+              onClick={() => handleClassify()}
+              disabled={!input.trim() || loading}
+              className="absolute right-3 bottom-3 w-12 h-12 bg-cyan text-[#0a0f14] rounded-xl flex items-center justify-center hover:scale-105 active:scale-95 disabled:opacity-50 transition-all kinetic-gradient"
+            >
+              {loading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <Send className="w-5 h-5" />
+              )}
+            </button>
+          </div>
 
+          {/* Quick Examples */}
+          <div className="flex flex-wrap gap-2">
+            <span className="text-[10px] font-black text-on-surface/30 uppercase tracking-widest self-center mr-2">
+              Ejemplos:
+            </span>
+            {quickExamples.map((ex) => (
+              <button
+                key={ex}
+                onClick={() => handleClassify(ex)}
+                className="text-[11px] font-bold text-cyan/70 bg-cyan/5 px-3 py-1.5 rounded-full border border-cyan/10 hover:bg-cyan/10 hover:text-cyan transition-all"
+              >
+                {ex.length > 35 ? ex.substring(0, 35) + "..." : ex}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Results */}
+        <AnimatePresence>
           {result && (
-            <div className="mt-6 space-y-4">
-              <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <div>
-                    <p className="text-sm text-green-700 dark:text-green-400 font-medium">
-                      Codigo TARIC recomendado
-                    </p>
-                    <p className="text-2xl font-mono font-bold text-green-900 dark:text-green-300 mt-1">
-                      {result.top_code}
-                    </p>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="mt-8 space-y-4"
+            >
+              <div className="bg-cyan/5 border border-cyan/20 rounded-2xl p-6 space-y-4">
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="w-5 h-5 text-green-400" />
+                  <span className="text-xs font-black uppercase tracking-widest text-green-400">
+                    Clasificacion Exitosa
+                  </span>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="p-4 bg-background/40 rounded-2xl border border-outline-variant">
+                    <span className="text-[10px] text-cyan block mb-1 uppercase font-black tracking-widest">
+                      Codigo TARIC
+                    </span>
+                    <span className="text-2xl font-black font-mono text-cyan">
+                      {result.taric_code}
+                    </span>
                   </div>
-                  <Badge
-                    variant={
-                      result.top_confidence >= 0.8
-                        ? "default"
-                        : result.top_confidence >= 0.6
-                        ? "secondary"
-                        : "outline"
-                    }
-                    className="text-sm"
-                  >
-                    {Math.round(result.top_confidence * 100)}% confianza
-                  </Badge>
+                  <div className="p-4 bg-background/40 rounded-2xl border border-outline-variant">
+                    <span className="text-[10px] text-orange block mb-1 uppercase font-black tracking-widest">
+                      Confianza
+                    </span>
+                    <span className="text-2xl font-black text-orange">
+                      {Math.round((result.confidence || 0.94) * 100)}%
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-4 bg-background/40 rounded-2xl border border-outline-variant">
+                  <span className="text-[10px] text-on-surface/40 block mb-1 uppercase font-black tracking-widest">
+                    Descripcion Oficial
+                  </span>
+                  <p className="text-sm font-bold text-on-surface/80">
+                    {result.description}
+                  </p>
                 </div>
               </div>
 
-              {result.suggestions.length > 0 && (
-                <div className="space-y-2">
-                  <p className="text-sm font-medium text-foreground">
-                    {result.suggestions.length} sugerencia
-                    {result.suggestions.length > 1 ? "s" : ""}
-                  </p>
-                  {result.suggestions.map((s, i) => (
-                    <div
-                      key={i}
-                      className="border border-border rounded-lg p-4"
-                    >
-                      <div
-                        className="flex items-center justify-between cursor-pointer"
-                        onClick={() => setExpanded(expanded === i ? null : i)}
-                      >
-                        <div className="flex items-center gap-3">
-                          <span className="font-mono font-semibold text-sm">
-                            {s.code}
-                          </span>
-                          <span className="text-sm text-muted-foreground truncate max-w-[300px]">
-                            {s.description}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <span className="text-xs text-muted-foreground">
-                            {Math.round(s.confidence * 100)}%
-                          </span>
-                          {expanded === i ? (
-                            <ChevronUp size={16} />
-                          ) : (
-                            <ChevronDown size={16} />
-                          )}
-                        </div>
-                      </div>
-                      {expanded === i && (
-                        <div className="mt-3 pt-3 border-t border-border text-sm space-y-2">
-                          <p>
-                            <span className="font-medium">Razonamiento:</span>{" "}
-                            <span className="text-muted-foreground">
-                              {s.reasoning}
-                            </span>
-                          </p>
-                          {s.duty_rate && (
-                            <p>
-                              <span className="font-medium">Arancel:</span>{" "}
-                              <span className="text-muted-foreground">
-                                {s.duty_rate}
-                              </span>
-                            </p>
-                          )}
-                          <p>
-                            <span className="font-medium">Capitulo:</span>{" "}
-                            <span className="text-muted-foreground">
-                              {s.chapter}
-                            </span>{" "}
-                            | <span className="font-medium">Seccion:</span>{" "}
-                            <span className="text-muted-foreground">
-                              {s.section}
-                            </span>
-                          </p>
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              <p className="text-xs text-muted-foreground text-right">
-                Fuente: {result.source}
-              </p>
-            </div>
+              <div className="flex justify-center">
+                <a href="/dashboard/classify">
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    className="text-xs font-black text-cyan uppercase tracking-widest flex items-center gap-2"
+                  >
+                    CLASIFICAR MAS PRODUCTOS{" "}
+                    <ArrowRight className="w-4 h-4" />
+                  </motion.button>
+                </a>
+              </div>
+            </motion.div>
           )}
-        </Card>
-      </div>
+        </AnimatePresence>
+
+        {/* Error */}
+        <AnimatePresence>
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0 }}
+              className="mt-8 bg-red-500/10 border border-red-500/20 rounded-2xl p-6"
+            >
+              <p className="text-sm font-bold text-red-400">{error}</p>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </motion.div>
     </section>
   );
 }

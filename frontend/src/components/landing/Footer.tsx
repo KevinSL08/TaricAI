@@ -1,63 +1,81 @@
-import { Separator } from "@/components/ui/separator";
+"use client";
+
+import { Ship } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="py-12 px-4 sm:px-6 lg:px-8 border-t border-border">
-      <div className="max-w-7xl mx-auto">
-        <div className="grid sm:grid-cols-2 md:grid-cols-4 gap-8">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <span className="text-primary-foreground font-bold text-sm">T</span>
-              </div>
-              <span className="font-bold text-lg">
-                Taric<span className="text-blue-600 dark:text-blue-400">AI</span>
-              </span>
-            </div>
-            <p className="text-sm text-muted-foreground">
-              Clasificacion arancelaria TARIC con Inteligencia Artificial para
-              agencias de aduanas e importadores.
-            </p>
+    <footer className="bg-surface/80 backdrop-blur-xl px-6 py-20 border-t border-outline-variant">
+      <div className="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="space-y-6 lg:col-span-2">
+          <div className="flex items-center gap-3">
+            <Ship className="w-8 h-8 text-cyan" />
+            <span className="font-black text-2xl tracking-tighter text-glow">
+              Taric<span className="text-cyan">AI</span>
+            </span>
           </div>
-
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Producto</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#features" className="hover:text-foreground transition-colors">Funcionalidades</a></li>
-              <li><a href="#pricing" className="hover:text-foreground transition-colors">Precios</a></li>
-              <li><a href="#demo" className="hover:text-foreground transition-colors">Demo</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">API</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Empresa</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#team" className="hover:text-foreground transition-colors">Equipo</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Blog</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Contacto</a></li>
-            </ul>
-          </div>
-
-          <div>
-            <h4 className="font-semibold text-foreground mb-4">Legal</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#" className="hover:text-foreground transition-colors">Politica de privacidad</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Terminos de servicio</a></li>
-              <li><a href="#" className="hover:text-foreground transition-colors">Aviso legal</a></li>
-            </ul>
+          <p className="text-on-surface/50 max-w-sm leading-relaxed text-sm">
+            Revolucionando la clasificación arancelaria mediante inteligencia artificial.
+            Precisión, velocidad y cumplimiento normativo para agencias de aduanas e importadores.
+          </p>
+          <div className="flex gap-3">
+            <span className="text-[9px] font-black uppercase tracking-widest text-on-surface/20 bg-surface-bright px-3 py-1.5 rounded-full border border-outline-variant">
+              TARIC
+            </span>
+            <span className="text-[9px] font-black uppercase tracking-widest text-on-surface/20 bg-surface-bright px-3 py-1.5 rounded-full border border-outline-variant">
+              IA
+            </span>
+            <span className="text-[9px] font-black uppercase tracking-widest text-on-surface/20 bg-surface-bright px-3 py-1.5 rounded-full border border-outline-variant">
+              ADUANAS
+            </span>
           </div>
         </div>
 
-        <Separator className="my-8" />
+        <div className="space-y-6">
+          <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-cyan">
+            Producto
+          </h4>
+          <div className="space-y-3">
+            {["Clasificador IA", "Calculador de Aranceles", "Control Fitosanitario", "Documentación", "API"].map(
+              (item) => (
+                <div
+                  key={item}
+                  className="text-sm text-on-surface/40 hover:text-on-surface/70 transition-colors cursor-pointer font-medium"
+                >
+                  {item}
+                </div>
+              )
+            )}
+          </div>
+        </div>
 
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-muted-foreground">
-            2026 TaricAI. Todos los derechos reservados.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Madrid, Espana
-          </p>
+        <div className="space-y-6">
+          <h4 className="text-[11px] font-black uppercase tracking-[0.3em] text-cyan">
+            Empresa
+          </h4>
+          <div className="space-y-3">
+            {["Sobre Nosotros", "Contacto", "Blog", "Privacidad", "Términos"].map(
+              (item) => (
+                <div
+                  key={item}
+                  className="text-sm text-on-surface/40 hover:text-on-surface/70 transition-colors cursor-pointer font-medium"
+                >
+                  {item}
+                </div>
+              )
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-outline-variant flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p className="text-[11px] text-on-surface/30 font-bold uppercase tracking-widest">
+          © 2026 TaricAI. Todos los derechos reservados.
+        </p>
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-green-400 pulse-glow" />
+          <span className="text-[10px] font-black text-green-400 uppercase tracking-widest">
+            Todos los sistemas operativos
+          </span>
         </div>
       </div>
     </footer>

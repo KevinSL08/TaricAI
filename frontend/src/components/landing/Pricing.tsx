@@ -1,118 +1,136 @@
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Check } from "lucide-react";
+"use client";
+
+import { motion } from "motion/react";
+import { Check, ArrowRight, Sparkles } from "lucide-react";
 
 const plans = [
   {
-    name: "Starter",
+    name: "STARTER",
     price: "249",
-    description: "Para agencias pequenas o importadores independientes.",
+    description: "Para agencias que inician su transformación digital",
     features: [
       "5 usuarios",
-      "200 clasificaciones/mes",
-      "API basica",
+      "200 consultas/mes",
+      "Clasificación TARIC con IA",
+      "Cálculo de aranceles",
       "Soporte por email",
-      "Historial 30 dias",
     ],
-    cta: "Empezar",
-    popular: false,
+    highlighted: false,
   },
   {
-    name: "Professional",
+    name: "PROFESSIONAL",
     price: "599",
-    description: "Para agencias de aduanas con volumen medio-alto.",
+    description: "Para agencias con volumen medio-alto de operaciones",
     features: [
       "15 usuarios",
-      "Clasificaciones ilimitadas",
-      "API completa",
-      "Soporte prioritario",
-      "Historial ilimitado",
-      "Calculador de aranceles",
+      "Consultas ilimitadas",
+      "Todo de Starter",
       "Control fitosanitario",
+      "Documentación automática",
+      "Soporte prioritario",
+      "API access",
     ],
-    cta: "Empezar",
-    popular: true,
+    highlighted: true,
   },
   {
-    name: "Enterprise",
-    price: "1.499",
-    description: "Para grandes operadores con necesidades a medida.",
+    name: "ENTERPRISE",
+    price: "1,499",
+    description: "Solución completa para grandes operadores",
     features: [
       "Usuarios ilimitados",
-      "Clasificaciones ilimitadas",
-      "API con integraciones custom",
-      "Soporte dedicado 24/7",
+      "Consultas ilimitadas",
+      "Todo de Professional",
+      "Integraciones custom",
       "SLA garantizado",
-      "Todas las funcionalidades",
-      "Formacion personalizada",
-      "Integracion con ERP/SAP",
+      "Account manager dedicado",
+      "Onboarding personalizado",
     ],
-    cta: "Contactar",
-    popular: false,
+    highlighted: false,
   },
 ];
 
 export function Pricing() {
   return (
-    <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
-            Planes adaptados a tu volumen
-          </h2>
-          <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
-            Sin permanencia. Facturacion mensual o anual con descuento.
-          </p>
-        </div>
+    <section id="pricing" className="px-6 py-24 max-w-7xl mx-auto space-y-16">
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        viewport={{ once: true }}
+        className="text-center space-y-4"
+      >
+        <h2 className="text-[0.75rem] uppercase tracking-[0.4em] font-black text-cyan">
+          PLANES
+        </h2>
+        <p className="text-3xl sm:text-4xl font-black tracking-tight">
+          Precio Justo, Valor Real
+        </p>
+        <p className="text-on-surface/40 text-sm max-w-md mx-auto">
+          Cada plan incluye acceso a nuestra IA de clasificación TARIC con datos oficiales verificados.
+        </p>
+      </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          {plans.map((plan) => (
-            <Card
-              key={plan.name}
-              className={`relative p-8 flex flex-col ${
-                plan.popular ? "border-blue-600 dark:border-blue-400 border-2 shadow-lg" : ""
-              }`}
-            >
-              {plan.popular && (
-                <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 bg-blue-600 dark:bg-blue-500">
-                  Mas popular
-                </Badge>
-              )}
-              <div>
-                <h3 className="text-xl font-bold text-foreground">
-                  {plan.name}
-                </h3>
-                <p className="text-sm text-muted-foreground mt-1">
-                  {plan.description}
-                </p>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold text-foreground">
-                    {plan.price}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {plans.map((plan, i) => (
+          <motion.div
+            key={plan.name}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: i * 0.1 }}
+            whileHover={{ y: -8 }}
+            className={`relative p-8 rounded-3xl border transition-all ${
+              plan.highlighted
+                ? "bg-cyan/5 border-cyan/30 shadow-[0_0_40px_rgba(0,210,255,0.1)]"
+                : "bg-surface/40 border-outline-variant"
+            }`}
+          >
+            {plan.highlighted && (
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <div className="inline-flex items-center gap-1.5 bg-cyan px-4 py-1 rounded-full text-[#0a0f14]">
+                  <Sparkles className="w-3 h-3" />
+                  <span className="text-[10px] font-black uppercase tracking-widest">
+                    Popular
                   </span>
-                  <span className="text-muted-foreground">/mes</span>
                 </div>
               </div>
+            )}
 
-              <ul className="mt-8 space-y-3 flex-1">
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-[11px] font-black uppercase tracking-[0.3em] text-cyan">
+                  {plan.name}
+                </h3>
+                <div className="mt-4 flex items-baseline gap-1">
+                  <span className="text-5xl font-black">€{plan.price}</span>
+                  <span className="text-sm text-on-surface/40 font-bold">/mes</span>
+                </div>
+                <p className="mt-2 text-xs text-on-surface/40">{plan.description}</p>
+              </div>
+
+              <div className="space-y-3">
                 {plan.features.map((feature) => (
-                  <li key={feature} className="flex items-start gap-3">
-                    <Check size={18} className="text-green-500 dark:text-green-400 shrink-0 mt-0.5" />
-                    <span className="text-sm text-foreground">{feature}</span>
-                  </li>
+                  <div key={feature} className="flex items-center gap-3">
+                    <Check className="w-4 h-4 text-green-400 shrink-0" />
+                    <span className="text-sm text-on-surface/70">{feature}</span>
+                  </div>
                 ))}
-              </ul>
+              </div>
 
-              <Button
-                className="mt-8 w-full"
-                variant={plan.popular ? "default" : "outline"}
-                size="lg"
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className={`w-full py-4 rounded-2xl font-black text-xs uppercase tracking-widest flex items-center justify-center gap-2 transition-all ${
+                  plan.highlighted
+                    ? "kinetic-gradient text-[#0a0f14]"
+                    : "bg-surface-bright border border-outline-variant text-on-surface hover:border-cyan/30"
+                }`}
               >
-                {plan.cta}
-              </Button>
-            </Card>
-          ))}
-        </div>
+                EMPEZAR
+                <ArrowRight className="w-4 h-4" />
+              </motion.button>
+            </div>
+          </motion.div>
+        ))}
       </div>
     </section>
   );
