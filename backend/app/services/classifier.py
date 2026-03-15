@@ -59,22 +59,31 @@ Responde SIEMPRE en JSON valido con esta estructura exacta:
   "notes": "Notas adicionales o advertencias"
 }
 
-EJEMPLOS DE CLASIFICACION CORRECTA:
-- "Cafe tostado en grano arabica" -> 0901210000 (Seccion II, Cap 09)
-- "Camiseta de algodon para hombre" -> 6109100000 (Seccion XI, Cap 61)
-- "iPhone 15 Pro" -> 8517130000 (Seccion XVI, Cap 85)
-- "Aceite de oliva virgen extra" -> 1509100000 (Seccion III, Cap 15)
-- "Chocolate con leche en tableta" -> 1806310000 (Seccion IV, Cap 18, NO 1704)
-- "Cepillo de dientes electrico recargable" -> 8509800000 (Seccion XVI, Cap 85 por ser electrico)
-- "Pintura acrilica para paredes base agua" -> 3209100000 (Cap 32, acuosa=3209)
-- "Television LED 55 pulgadas" -> 8528720000 (Seccion XVI, Cap 85)
-- "Salmon fresco del Atlantico" -> 0302140000 (Seccion I, Cap 03)
-- "Whisky escoces single malt" -> 2208301100 (Seccion IV, Cap 22)
-- "Pila alcalina AA" -> 8506101800 (Seccion XVI, Cap 85)
-- "Memoria USB flash drive" -> 8523510000 (Seccion XVI, Cap 85)
-- "Aceite de girasol refinado" -> 1512191000 (Seccion III, Cap 15)
-- "Azucar blanco refinado" -> 1701991000 (Seccion IV, Cap 17)
-- "Mochila de nylon" -> 4202920000 (Seccion VIII, Cap 42 por ser articulo de viaje)
+EJEMPLOS DE CLASIFICACION CORRECTA (codigos EXACTOS de 10 digitos):
+- "Cafe tostado en grano arabica" -> 0901210000 (Cap 09)
+- "Camiseta de algodon hombre" -> 6109100010 (Cap 61, T-shirts=6109100010)
+- "iPhone 15 Pro" -> 8517130000 (Cap 85)
+- "Aceite de oliva virgen extra" -> 1509400000 (Cap 15, virgin olive oils=1509400000)
+- "Chocolate con leche tableta" -> 1806310000 (Cap 18, NO 1704)
+- "Cepillo dientes electrico" -> 8509800000 (Cap 85, electrico=Seccion XVI)
+- "Pintura acrilica paredes base agua" -> 3209100000 (Cap 32, acuosa=3209)
+- "TV LED 55 pulgadas" -> 8528721000 (Cap 85)
+- "Salmon fresco Atlantico" -> 0302140010 (Cap 03, Atlantic salmon=0302140010)
+- "Whisky escoces single malt" -> 2208303000 (Cap 22, single malt Scotch=2208303000)
+- "Pila alcalina AA" -> 8506101800 (Cap 85)
+- "Memoria USB flash" -> 8523511000 (Cap 85, semiconductor media=8523511000)
+- "Aceite girasol refinado" -> 1512191000 (Cap 15)
+- "Azucar blanco refinado" -> 1701991000 (Cap 17)
+- "Mochila nylon portatil" -> 4202921100 (Cap 42, textile travel bags=4202921100)
+- "Miel natural flores" -> 0409000090 (Cap 04, miel no manuka=0409000090)
+- "Panuelos papel tissue caja" -> 4818201000 (Cap 48, handkerchiefs/facial tissues=4818201000)
+- "Silla oficina ruedas" -> 9401390000 (Cap 94, swivel adjustable=9401390000)
+- "Naranjas frescas" -> 0805108010 (Cap 08, fresh oranges=0805108010)
+- "Aspirina comprimidos" -> 3004900000 (Cap 30, otros medicamentos=3004900000)
+- "Almendras peladas" -> 0802121000 (Cap 08, shelled almonds=0802121000)
+- "Auriculares bluetooth" -> 8518300090 (Cap 85, headphones other=8518300090)
+- "Gafas sol polarizadas" -> 9004109100 (Cap 90, polarizing sunglasses=9004109100)
+- "Juguete peluche oso" -> 9503003500 (Cap 95, stuffed toys=9503003500)
 
 IMPORTANTE:
 - Proporciona entre 1 y 5 sugerencias, ordenadas de mayor a menor confianza.
@@ -268,7 +277,18 @@ async def classify_product(
             source=f"{source}-error",
         )
 
-    # Construir respuesta estructurada
+    # Extraer codigos RAG para validacion
+    rag_codes = []
+    if rag_context:
+        for line in rag_context.split("\n"):
+            if line.startswith("- ") and "|" in line:
+                rag_code = line.split("|")[0].replace("- ", "").strip()
+                if rag_code.isdigit():
+                    rag_codes.append(rag_code)
+
+    # Construir respuesta estructurada con validacion contra DB
+    from app.services.code_validator import validate_and_correct_code
+
     suggestions = []
     for s in parsed.get("suggestions", []):
         # Normalizar codigo a exactamente 10 digitos
@@ -276,16 +296,29 @@ async def classify_product(
         if raw_code and raw_code.isdigit():
             raw_code = raw_code.ljust(10, "0")[:10]
         elif raw_code:
-            # Quitar caracteres no numericos
             raw_code = "".join(c for c in raw_code if c.isdigit())
             raw_code = raw_code.ljust(10, "0")[:10]
 
+        # Validar y corregir contra la base de datos
+        if raw_code and raw_code != "0000000000":
+            validation = validate_and_correct_code(
+                raw_code, description, rag_codes
+            )
+            validated_code = validation["code"]
+            reasoning = s.get("reasoning", "")
+            if validation["corrected"]:
+                reasoning += f" [Codigo corregido de {validation['original_code']} a {validated_code} por validacion DB ({validation['method']})]"
+                logger.info(f"Codigo corregido: {raw_code} -> {validated_code} ({validation['method']})")
+        else:
+            validated_code = raw_code or "0000000000"
+            reasoning = s.get("reasoning", "")
+
         suggestions.append(
             TaricSuggestion(
-                code=raw_code or "0000000000",
+                code=validated_code,
                 description=s.get("description", ""),
                 confidence=float(s.get("confidence", 0.5)),
-                reasoning=s.get("reasoning", ""),
+                reasoning=reasoning,
                 duty_rate=s.get("duty_rate"),
                 chapter=s.get("chapter"),
                 section=s.get("section"),
