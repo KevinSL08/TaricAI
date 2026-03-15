@@ -1,3 +1,5 @@
+import { createClient, isSupabaseConfigured } from "@/lib/supabase";
+
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export interface TaricSuggestion {
@@ -25,12 +27,35 @@ export interface ClassifyRequest {
   additional_context?: string;
 }
 
+async function getAuthHeaders(): Promise<Record<string, string>> {
+  const headers: Record<string, string> = {
+    "Content-Type": "application/json",
+  };
+
+  if (isSupabaseConfigured()) {
+    try {
+      const supabase = createClient();
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+      }
+    } catch {
+      // No auth available, continue without token
+    }
+  }
+
+  return headers;
+}
+
 export async function classifyProduct(
   request: ClassifyRequest
 ): Promise<ClassifyResponse> {
+  const headers = await getAuthHeaders();
   const res = await fetch(`${API_BASE}/api/v1/classify`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(request),
   });
 

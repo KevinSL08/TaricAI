@@ -1,8 +1,10 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 const navLinks = [
   { href: "#features", label: "Funcionalidades" },
@@ -13,6 +15,7 @@ const navLinks = [
 
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, loading } = useAuth();
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/80 backdrop-blur-md border-b border-border">
@@ -37,9 +40,25 @@ export function Navbar() {
                 {link.label}
               </a>
             ))}
-            <Button asChild>
-              <a href="#demo">Probar Gratis</a>
-            </Button>
+            {!loading && (
+              user ? (
+                <Button render={<Link href="/dashboard" />}>
+                  Ir al Dashboard
+                </Button>
+              ) : (
+                <div className="flex items-center gap-3">
+                  <Link
+                    href="/login"
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Iniciar sesion
+                  </Link>
+                  <Button render={<Link href="/signup" />}>
+                    Registrate
+                  </Button>
+                </div>
+              )
+            )}
           </div>
 
           <button
@@ -63,9 +82,22 @@ export function Navbar() {
               {link.label}
             </a>
           ))}
-          <Button className="w-full" asChild>
-            <a href="#demo">Probar Gratis</a>
-          </Button>
+          {!loading && (
+            user ? (
+              <Button className="w-full" render={<Link href="/dashboard" />}>
+                Ir al Dashboard
+              </Button>
+            ) : (
+              <div className="space-y-2">
+                <Button variant="outline" className="w-full" render={<Link href="/login" />}>
+                  Iniciar sesion
+                </Button>
+                <Button className="w-full" render={<Link href="/signup" />}>
+                  Registrate
+                </Button>
+              </div>
+            )
+          )}
         </div>
       )}
     </nav>

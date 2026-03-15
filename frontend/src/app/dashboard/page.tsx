@@ -153,8 +153,8 @@ export default function DashboardPage() {
             <div className="text-center py-8 text-muted-foreground">
               <PackageSearch size={40} className="mx-auto mb-3 opacity-50" />
               <p>No hay clasificaciones aun.</p>
-              <Button asChild className="mt-4" variant="outline">
-                <Link href="/dashboard/classify">Clasificar primer producto</Link>
+              <Button className="mt-4" variant="outline" render={<Link href="/dashboard/classify" />}>
+                Clasificar primer producto
               </Button>
             </div>
           ) : (
@@ -183,10 +183,8 @@ export default function DashboardPage() {
                 </div>
               ))}
               {history.length > 5 && (
-                <Button asChild variant="ghost" className="w-full">
-                  <Link href="/dashboard/history">
-                    Ver todas ({history.length})
-                  </Link>
+                <Button variant="ghost" className="w-full" render={<Link href="/dashboard/history" />}>
+                  Ver todas ({history.length})
                 </Button>
               )}
             </div>

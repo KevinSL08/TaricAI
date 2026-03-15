@@ -8,11 +8,12 @@ import {
   Search,
   History,
   PackageSearch,
-  ArrowLeft,
+  LogOut,
   Menu,
   X,
 } from "lucide-react";
 import { useState } from "react";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 const navItems = [
   {
@@ -40,6 +41,7 @@ const navItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, signOut } = useAuth();
 
   return (
     <>
@@ -105,15 +107,22 @@ export function Sidebar() {
           })}
         </nav>
 
-        {/* Back to landing */}
-        <div className="px-3 py-4 border-t border-border">
-          <Link
-            href="/"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+        {/* User info & logout */}
+        <div className="px-3 py-4 border-t border-border space-y-1">
+          {user && (
+            <div className="px-3 py-2">
+              <p className="text-xs text-muted-foreground truncate">
+                {user.email}
+              </p>
+            </div>
+          )}
+          <button
+            onClick={() => signOut()}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition-colors w-full"
           >
-            <ArrowLeft size={20} />
-            Volver al inicio
-          </Link>
+            <LogOut size={20} />
+            Cerrar sesion
+          </button>
         </div>
       </aside>
     </>

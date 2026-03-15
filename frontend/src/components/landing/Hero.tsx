@@ -25,14 +25,12 @@ export function Hero() {
         </p>
 
         <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button size="lg" className="px-8 text-base" asChild>
-            <a href="#demo">
-              Probar Demo Gratis
-              <ArrowRight size={18} className="ml-2" />
-            </a>
+          <Button size="lg" className="px-8 text-base" render={<a href="#demo" />}>
+            Probar Demo Gratis
+            <ArrowRight size={18} className="ml-2" />
           </Button>
-          <Button size="lg" variant="outline" className="px-8 text-base" asChild>
-            <a href="#pricing">Ver Precios</a>
+          <Button size="lg" variant="outline" className="px-8 text-base" render={<a href="#pricing" />}>
+            Ver Precios
           </Button>
         </div>
 
