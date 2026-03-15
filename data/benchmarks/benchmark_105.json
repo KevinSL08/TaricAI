@@ -1,0 +1,655 @@
+{
+  "version": "2.0",
+  "description": "108 productos reales para medir precision del clasificador TARIC. Cubre 52 capitulos y las 21 secciones del arancel.",
+  "date": "2026-03-15",
+  "cases": [
+    {
+      "description": "Cafe colombiano tostado en grano arabica",
+      "origin": "CO",
+      "expected_code": "0901210000",
+      "expected_heading": "0901"
+    },
+    {
+      "description": "iPhone 15 Pro Max 256GB",
+      "origin": "CN",
+      "expected_code": "8517130000",
+      "expected_heading": "8517"
+    },
+    {
+      "description": "Aceite de oliva virgen extra",
+      "origin": "ES",
+      "expected_code": "1509200010",
+      "expected_heading": "1509"
+    },
+    {
+      "description": "Televisor Samsung 55 pulgadas QLED 4K",
+      "origin": "KR",
+      "expected_code": "8528721000",
+      "expected_heading": "8528"
+    },
+    {
+      "description": "Laptop gaming ASUS 16 pulgadas RTX 4070",
+      "origin": "TW",
+      "expected_code": "8471300000",
+      "expected_heading": "8471"
+    },
+    {
+      "description": "Zapatillas deportivas Nike Air Max",
+      "origin": "VN",
+      "expected_code": "6404110000",
+      "expected_heading": "6404"
+    },
+    {
+      "description": "Cerveza artesanal IPA en lata 330ml",
+      "origin": "BE",
+      "expected_code": "2203000100",
+      "expected_heading": "2203"
+    },
+    {
+      "description": "Camiseta de algodon para hombre",
+      "origin": "BD",
+      "expected_code": "6109100010",
+      "expected_heading": "6109"
+    },
+    {
+      "description": "Vino tinto Rioja Reserva 750ml",
+      "origin": "ES",
+      "expected_code": "2204210600",
+      "expected_heading": "2204"
+    },
+    {
+      "description": "Arroz basmati en paquete de 1kg",
+      "origin": "IN",
+      "expected_code": "1006302110",
+      "expected_heading": "1006"
+    },
+    {
+      "description": "Chocolate con leche tableta 100g",
+      "origin": "CH",
+      "expected_code": "1806310000",
+      "expected_heading": "1806"
+    },
+    {
+      "description": "Neumatico radial para coche 205/55 R16",
+      "origin": "CN",
+      "expected_code": "4011100000",
+      "expected_heading": "4011"
+    },
+    {
+      "description": "Tornillos de acero inoxidable M8x40",
+      "origin": "CN",
+      "expected_code": "7318159511",
+      "expected_heading": "7318"
+    },
+    {
+      "description": "Miel natural de flores",
+      "origin": "AR",
+      "expected_code": "0409000090",
+      "expected_heading": "0409"
+    },
+    {
+      "description": "Salmon fresco del Atlantico entero",
+      "origin": "NO",
+      "expected_code": "0302140010",
+      "expected_heading": "0302"
+    },
+    {
+      "description": "Jeans de hombre pantalon vaquero azul",
+      "origin": "TR",
+      "expected_code": "6203423100",
+      "expected_heading": "6203"
+    },
+    {
+      "description": "Aspirina comprimidos 500mg caja 20 unidades",
+      "origin": "DE",
+      "expected_code": "3004900000",
+      "expected_heading": "3004"
+    },
+    {
+      "description": "Naranjas frescas Valencia",
+      "origin": "ES",
+      "expected_code": "0805108010",
+      "expected_heading": "0805"
+    },
+    {
+      "description": "Silla de oficina ergonomica con ruedas",
+      "origin": "CN",
+      "expected_code": "9401310000",
+      "expected_heading": "9401"
+    },
+    {
+      "description": "Panuelos de papel tissue caja 100 unidades",
+      "origin": "CN",
+      "expected_code": "4818201000",
+      "expected_heading": "4818"
+    },
+    {
+      "description": "Reloj de pulsera Casio digital",
+      "origin": "JP",
+      "expected_code": "9102210000",
+      "expected_heading": "9102"
+    },
+    {
+      "description": "Auriculares bluetooth inalambricos",
+      "origin": "CN",
+      "expected_code": "8518300090",
+      "expected_heading": "8518"
+    },
+    {
+      "description": "Aceite de girasol refinado 1 litro",
+      "origin": "UA",
+      "expected_code": "1512191000",
+      "expected_heading": "1512"
+    },
+    {
+      "description": "Impresora laser HP multifuncion",
+      "origin": "CN",
+      "expected_code": "8443321000",
+      "expected_heading": "8443"
+    },
+    {
+      "description": "Juguete de peluche oso 30cm",
+      "origin": "CN",
+      "expected_code": "9503003500",
+      "expected_heading": "9503"
+    },
+    {
+      "description": "Tomate cherry fresco en bandeja",
+      "origin": "MA",
+      "expected_code": "0702001007",
+      "expected_heading": "0702"
+    },
+    {
+      "description": "Cable USB-C a USB-C 1 metro",
+      "origin": "CN",
+      "expected_code": "8544421000",
+      "expected_heading": "8544"
+    },
+    {
+      "description": "Mochila de nylon para portatil 15 pulgadas",
+      "origin": "CN",
+      "expected_code": "4202921100",
+      "expected_heading": "4202"
+    },
+    {
+      "description": "Queso parmesano Reggiano curado 24 meses",
+      "origin": "IT",
+      "expected_code": "0406906100",
+      "expected_heading": "0406"
+    },
+    {
+      "description": "Whisky escoces single malt 12 anos 700ml",
+      "origin": "GB",
+      "expected_code": "2208303000",
+      "expected_heading": "2208"
+    },
+    {
+      "description": "Cepillo de dientes electrico recargable",
+      "origin": "DE",
+      "expected_code": "8509800000",
+      "expected_heading": "8509"
+    },
+    {
+      "description": "Azucar blanco refinado en bolsa 1kg",
+      "origin": "BR",
+      "expected_code": "1701991000",
+      "expected_heading": "1701"
+    },
+    {
+      "description": "Gafas de sol polarizadas montura plastico",
+      "origin": "CN",
+      "expected_code": "9004109100",
+      "expected_heading": "9004"
+    },
+    {
+      "description": "Pila alcalina AA pack de 4",
+      "origin": "JP",
+      "expected_code": "8506101800",
+      "expected_heading": "8506"
+    },
+    {
+      "description": "Detergente liquido para lavadora 2 litros",
+      "origin": "DE",
+      "expected_code": "3402310000",
+      "expected_heading": "3402"
+    },
+    {
+      "description": "Pasta espagueti de trigo duro 500g",
+      "origin": "IT",
+      "expected_code": "1902191020",
+      "expected_heading": "1902"
+    },
+    {
+      "description": "Carne de vacuno congelada deshuesada",
+      "origin": "AR",
+      "expected_code": "0202301011",
+      "expected_heading": "0202"
+    },
+    {
+      "description": "Crema hidratante facial 50ml",
+      "origin": "FR",
+      "expected_code": "3304990000",
+      "expected_heading": "3304"
+    },
+    {
+      "description": "Baldosas ceramicas para suelo 30x30cm",
+      "origin": "CN",
+      "expected_code": "6907400000",
+      "expected_heading": "6907"
+    },
+    {
+      "description": "Bicicleta de montana aluminio 29 pulgadas",
+      "origin": "TW",
+      "expected_code": "8712003010",
+      "expected_heading": "8712"
+    },
+    {
+      "description": "Pintura acrilica para paredes 5 litros",
+      "origin": "ES",
+      "expected_code": "3209100000",
+      "expected_heading": "3209"
+    },
+    {
+      "description": "Memoria USB flash drive 64GB",
+      "origin": "CN",
+      "expected_code": "8523511000",
+      "expected_heading": "8523"
+    },
+    {
+      "description": "Atun en conserva en aceite lata 80g",
+      "origin": "TH",
+      "expected_code": "1604142100",
+      "expected_heading": "1604"
+    },
+    {
+      "description": "Perfume eau de toilette 100ml",
+      "origin": "FR",
+      "expected_code": "3303001000",
+      "expected_heading": "3303"
+    },
+    {
+      "description": "Fresa fresca en bandeja 500g",
+      "origin": "ES",
+      "expected_code": "0810100000",
+      "expected_heading": "0810"
+    },
+    {
+      "description": "Guantes de latex desechables caja 100",
+      "origin": "MY",
+      "expected_code": "4015120000",
+      "expected_heading": "4015"
+    },
+    {
+      "description": "Almendras peladas naturales 250g",
+      "origin": "US",
+      "expected_code": "0802121000",
+      "expected_heading": "0802"
+    },
+    {
+      "description": "Motocicleta Honda 125cc",
+      "origin": "JP",
+      "expected_code": "8711201000",
+      "expected_heading": "8711"
+    },
+    {
+      "description": "Papel A4 blanco 80g paquete 500 hojas",
+      "origin": "FI",
+      "expected_code": "4802562000",
+      "expected_heading": "4802"
+    },
+    {
+      "description": "Clavos de acero 50mm caja 1kg",
+      "origin": "CN",
+      "expected_code": "7317002000",
+      "expected_heading": "7317"
+    },
+    {
+      "description": "Pollo entero congelado sin trocear",
+      "origin": "BR",
+      "expected_code": "0207120010",
+      "expected_heading": "0207"
+    },
+    {
+      "description": "Leche entera UHT en tetrabrik 1 litro",
+      "origin": "FR",
+      "expected_code": "0401200099",
+      "expected_heading": "0401"
+    },
+    {
+      "description": "Gambas congeladas peladas",
+      "origin": "EC",
+      "expected_code": "0306171900",
+      "expected_heading": "0306"
+    },
+    {
+      "description": "Huevos de gallina frescos clase A",
+      "origin": "ES",
+      "expected_code": "0407210000",
+      "expected_heading": "0407"
+    },
+    {
+      "description": "Te verde en hojas sueltas 100g",
+      "origin": "CN",
+      "expected_code": "0902100000",
+      "expected_heading": "0902"
+    },
+    {
+      "description": "Pimienta negra en grano 50g",
+      "origin": "VN",
+      "expected_code": "0904110000",
+      "expected_heading": "0904"
+    },
+    {
+      "description": "Trigo duro para molienda a granel",
+      "origin": "US",
+      "expected_code": "1001190000",
+      "expected_heading": "1001"
+    },
+    {
+      "description": "Soja en grano para aceite",
+      "origin": "BR",
+      "expected_code": "1201900000",
+      "expected_heading": "1201"
+    },
+    {
+      "description": "Patatas frescas para consumo",
+      "origin": "FR",
+      "expected_code": "0701900050",
+      "expected_heading": "0701"
+    },
+    {
+      "description": "Manzana Fuji fresca",
+      "origin": "CL",
+      "expected_code": "0808100080",
+      "expected_heading": "0808"
+    },
+    {
+      "description": "Platanos frescos Cavendish",
+      "origin": "EC",
+      "expected_code": "0803901000",
+      "expected_heading": "0803"
+    },
+    {
+      "description": "Aguacate Hass fresco",
+      "origin": "MX",
+      "expected_code": "0804400000",
+      "expected_heading": "0804"
+    },
+    {
+      "description": "Mantequilla sin sal 250g",
+      "origin": "IE",
+      "expected_code": "0405101900",
+      "expected_heading": "0405"
+    },
+    {
+      "description": "Yogur natural desnatado 125g",
+      "origin": "FR",
+      "expected_code": "0403101100",
+      "expected_heading": "0403"
+    },
+    {
+      "description": "Zumo de naranja concentrado congelado",
+      "origin": "BR",
+      "expected_code": "2009111100",
+      "expected_heading": "2009"
+    },
+    {
+      "description": "Harina de trigo para panificacion 1kg",
+      "origin": "FR",
+      "expected_code": "1101001100",
+      "expected_heading": "1101"
+    },
+    {
+      "description": "Aceite de palma crudo en cisterna",
+      "origin": "MY",
+      "expected_code": "1511100000",
+      "expected_heading": "1511"
+    },
+    {
+      "description": "Carbon mineral para calefaccion",
+      "origin": "ZA",
+      "expected_code": "2701121000",
+      "expected_heading": "2701"
+    },
+    {
+      "description": "Petroleo crudo Brent",
+      "origin": "NO",
+      "expected_code": "2709001000",
+      "expected_heading": "2709"
+    },
+    {
+      "description": "Gas natural licuado GNL",
+      "origin": "QA",
+      "expected_code": "2711110000",
+      "expected_heading": "2711"
+    },
+    {
+      "description": "Sal de mesa yodada 1kg",
+      "origin": "ES",
+      "expected_code": "2501009900",
+      "expected_heading": "2501"
+    },
+    {
+      "description": "Cemento portland gris saco 25kg",
+      "origin": "TR",
+      "expected_code": "2523290000",
+      "expected_heading": "2523"
+    },
+    {
+      "description": "Fertilizante urea granulada 46% nitrogeno",
+      "origin": "EG",
+      "expected_code": "3102100010",
+      "expected_heading": "3102"
+    },
+    {
+      "description": "Antibiotico amoxicilina capsulas 500mg",
+      "origin": "IN",
+      "expected_code": "3004109000",
+      "expected_heading": "3004"
+    },
+    {
+      "description": "Champu para cabello 400ml",
+      "origin": "US",
+      "expected_code": "3305100000",
+      "expected_heading": "3305"
+    },
+    {
+      "description": "Bolsas de plastico polietileno para supermercado",
+      "origin": "CN",
+      "expected_code": "3923210000",
+      "expected_heading": "3923"
+    },
+    {
+      "description": "Botella PET vacia 500ml para agua",
+      "origin": "CN",
+      "expected_code": "3923301090",
+      "expected_heading": "3923"
+    },
+    {
+      "description": "Tubo PVC rigido para agua potable 110mm",
+      "origin": "CN",
+      "expected_code": "3917231000",
+      "expected_heading": "3917"
+    },
+    {
+      "description": "Manguera de caucho para jardin 20 metros",
+      "origin": "CN",
+      "expected_code": "4009110000",
+      "expected_heading": "4009"
+    },
+    {
+      "description": "Maleta rigida con ruedas trolley 70cm",
+      "origin": "CN",
+      "expected_code": "4202121100",
+      "expected_heading": "4202"
+    },
+    {
+      "description": "Zapatos de cuero para hombre",
+      "origin": "IT",
+      "expected_code": "6403510500",
+      "expected_heading": "6403"
+    },
+    {
+      "description": "Madera de pino aserrada tablones 2 metros",
+      "origin": "SE",
+      "expected_code": "4407119800",
+      "expected_heading": "4407"
+    },
+    {
+      "description": "Carton corrugado para embalaje laminas",
+      "origin": "DE",
+      "expected_code": "4808100000",
+      "expected_heading": "4808"
+    },
+    {
+      "description": "Libro impreso novela tapa blanda",
+      "origin": "GB",
+      "expected_code": "4901990000",
+      "expected_heading": "4901"
+    },
+    {
+      "description": "Lana virgen sin cardar ni peinar",
+      "origin": "AU",
+      "expected_code": "5101110000",
+      "expected_heading": "5101"
+    },
+    {
+      "description": "Sabana de algodon 100% para cama matrimonio",
+      "origin": "PT",
+      "expected_code": "6302210000",
+      "expected_heading": "6302"
+    },
+    {
+      "description": "Alfombra de lana anudada a mano persa",
+      "origin": "IR",
+      "expected_code": "5701100010",
+      "expected_heading": "5701"
+    },
+    {
+      "description": "Botas de agua de caucho hasta rodilla",
+      "origin": "CN",
+      "expected_code": "6401100000",
+      "expected_heading": "6401"
+    },
+    {
+      "description": "Paraguas plegable con varillas de metal",
+      "origin": "CN",
+      "expected_code": "6601100000",
+      "expected_heading": "6601"
+    },
+    {
+      "description": "Vidrio templado para ventana 6mm",
+      "origin": "CN",
+      "expected_code": "7007190000",
+      "expected_heading": "7007"
+    },
+    {
+      "description": "Botella de vidrio vacia 750ml para vino",
+      "origin": "IT",
+      "expected_code": "7010902100",
+      "expected_heading": "7010"
+    },
+    {
+      "description": "Joyeria collar de oro 18 quilates",
+      "origin": "IT",
+      "expected_code": "7113191000",
+      "expected_heading": "7113"
+    },
+    {
+      "description": "Tuberia de acero inoxidable sin soldadura",
+      "origin": "CN",
+      "expected_code": "7304410000",
+      "expected_heading": "7304"
+    },
+    {
+      "description": "Alambre de cobre electrico 2.5mm",
+      "origin": "CL",
+      "expected_code": "7408110000",
+      "expected_heading": "7408"
+    },
+    {
+      "description": "Laminas de aluminio para cocina rollo 30m",
+      "origin": "CN",
+      "expected_code": "7607111100",
+      "expected_heading": "7607"
+    },
+    {
+      "description": "Motor electrico trifasico 5 kW",
+      "origin": "DE",
+      "expected_code": "8501520000",
+      "expected_heading": "8501"
+    },
+    {
+      "description": "Transformador electrico de potencia 100 kVA",
+      "origin": "CN",
+      "expected_code": "8504230000",
+      "expected_heading": "8504"
+    },
+    {
+      "description": "Aire acondicionado split 12000 BTU",
+      "origin": "CN",
+      "expected_code": "8415101000",
+      "expected_heading": "8415"
+    },
+    {
+      "description": "Lavadora automatica domestica 8kg",
+      "origin": "TR",
+      "expected_code": "8450110000",
+      "expected_heading": "8450"
+    },
+    {
+      "description": "Panel solar fotovoltaico 400W monocristalino",
+      "origin": "CN",
+      "expected_code": "8541402000",
+      "expected_heading": "8541"
+    },
+    {
+      "description": "Camion de carga diesel 20 toneladas",
+      "origin": "DE",
+      "expected_code": "8704230900",
+      "expected_heading": "8704"
+    },
+    {
+      "description": "Coche electrico vehiculo nuevo 5 plazas",
+      "origin": "CN",
+      "expected_code": "8703800010",
+      "expected_heading": "8703"
+    },
+    {
+      "description": "Drone con camara 4K uso recreativo",
+      "origin": "CN",
+      "expected_code": "8806100000",
+      "expected_heading": "8806"
+    },
+    {
+      "description": "Microscopio optico de laboratorio",
+      "origin": "JP",
+      "expected_code": "9011800000",
+      "expected_heading": "9011"
+    },
+    {
+      "description": "Termometro digital medico",
+      "origin": "CN",
+      "expected_code": "9025199000",
+      "expected_heading": "9025"
+    },
+    {
+      "description": "Guitar acustica de madera con cuerdas de nylon",
+      "origin": "CN",
+      "expected_code": "9202900000",
+      "expected_heading": "9202"
+    },
+    {
+      "description": "Balon de futbol tamano 5 cuero sintetico",
+      "origin": "PK",
+      "expected_code": "9506620000",
+      "expected_heading": "9506"
+    },
+    {
+      "description": "Cuadro pintura al oleo sobre lienzo original",
+      "origin": "FR",
+      "expected_code": "9701210000",
+      "expected_heading": "9701"
+    }
+  ]
+}

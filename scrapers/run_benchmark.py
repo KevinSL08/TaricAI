@@ -17,15 +17,16 @@ sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
 import requests
 
 API_URL = "http://localhost:8000/api/v1/classify"
-BENCHMARK_FILE = Path(__file__).parent.parent / "data" / "benchmarks" / "benchmark_50.json"
+BENCHMARK_DIR = Path(__file__).parent.parent / "data" / "benchmarks"
+DEFAULT_BENCHMARK = BENCHMARK_DIR / "benchmark_105.json"
 
 
-def run_benchmark(max_cases: int = 50):
+def run_benchmark(max_cases: int = 105, benchmark_file: Path = DEFAULT_BENCHMARK):
     print("=" * 60)
     print("  TaricAI - Benchmark de Precision")
     print("=" * 60)
 
-    with open(BENCHMARK_FILE, "r", encoding="utf-8") as f:
+    with open(benchmark_file, "r", encoding="utf-8") as f:
         data = json.load(f)
 
     cases = data["cases"][:max_cases]
@@ -125,7 +126,7 @@ def run_benchmark(max_cases: int = 50):
     print(f"  Partida (4d):          {exact+subhead+heading}/{total} = {heading_precision:.1f}%")
     print(f"")
     print(f"  ** Precision heading:  {heading_precision:.1f}% **")
-    print(f"  ** Objetivo semana 1:  >70% **")
+    print(f"  ** Benchmark:          {benchmark_file.name} **")
     print("=" * 60)
 
     # Guardar resultados
@@ -148,5 +149,7 @@ def run_benchmark(max_cases: int = 50):
 
 
 if __name__ == "__main__":
-    max_n = int(sys.argv[1]) if len(sys.argv) > 1 else 50
-    run_benchmark(max_n)
+    max_n = int(sys.argv[1]) if len(sys.argv) > 1 else 105
+    # Optional: pass benchmark file as second argument
+    bench = Path(sys.argv[2]) if len(sys.argv) > 2 else DEFAULT_BENCHMARK
+    run_benchmark(max_n, bench)
