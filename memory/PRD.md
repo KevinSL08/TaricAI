@@ -9,6 +9,14 @@ Crear una aplicación SaaS para consultar el TARIC (Arancel Integrado de las Com
 - **AI**: OpenAI GPT-5.2 via Emergent LLM Key
 - **Auth**: JWT-based authentication
 
+## Design Theme (Updated Jan 2026)
+- **Theme**: Futuristic Dark / Cyberpunk
+- **Primary Background**: #0a0f1a (Deep dark blue)
+- **Accent Color**: #00d4ff (Cyan/Turquoise)
+- **Cards**: Cyber cards with glowing borders
+- **Typography**: Plus Jakarta Sans (headings), IBM Plex Sans (body), JetBrains Mono (codes)
+- **Reference**: taric-ai.vercel.app
+
 ## User Personas
 1. **Importadores**: Empresas que importan productos a España/UE
 2. **Agentes Aduaneros**: Profesionales de despacho aduanero
@@ -27,21 +35,33 @@ Crear una aplicación SaaS para consultar el TARIC (Arancel Integrado de las Com
 
 ### Backend
 - User registration/login with JWT
-- TARIC search endpoint with AI analysis
+- TARIC search endpoint with AI analysis (GPT-5.2)
 - Search history management (CRUD)
 - MongoDB integration
 
-### Frontend
-- Landing page with hero section
-- User registration/login flows
-- Dashboard with search functionality
-- TARIC code display component (10-digit breakdown)
-- Duty calculator card
-- Document checklist component
+### Frontend (Futuristic Dark Theme)
+- Landing page with cyberpunk hero section
+- Live Classification Monitor display
+- Feature cards with cyber styling
+- Demo section with TARIC classifier
+- User registration/login with dark theme forms
+- Dashboard with cyber cards and glowing effects
+- TARIC code display component (10-digit breakdown with segments)
+- Duty calculator card with receipt style
+- Document checklist component with badges
 - Search history with delete functionality
+- Tab navigation (Clasificar/Historial)
+
+### Design Updates (Jan 2026)
+- Complete redesign to match taric-ai.vercel.app
+- Dark background (#0a0f1a) with cyan accents (#00d4ff)
+- Cyber cards with glowing borders on hover
+- Grid background pattern
+- Status indicators with glow effects
+- Example tags for quick search
 
 ## Known Issues
-- Emergent LLM Key budget exceeded - user needs to add balance in Profile->Universal Key->Add Balance
+- None critical - AI search working correctly
 
 ## Prioritized Backlog
 
