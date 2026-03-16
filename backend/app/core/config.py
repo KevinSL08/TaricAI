@@ -23,6 +23,9 @@ class Settings(BaseSettings):
     # Google Gemini (tier gratuito - clasificador principal)
     gemini_api_key: str = ""
 
+    # Groq (tier gratuito - Llama 3.3 70B, 1000 req/dia)
+    groq_api_key: str = ""
+
     # Pinecone
     pinecone_api_key: str = ""
     pinecone_index_name: str = "taricai-embeddings"

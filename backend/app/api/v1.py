@@ -174,6 +174,7 @@ async def classification_health():
 
     return {
         "status": "ok",
+        "groq_configured": bool(settings.groq_api_key),
         "gemini_configured": bool(settings.gemini_api_key),
         "anthropic_configured": bool(settings.anthropic_api_key),
         "openai_configured": bool(settings.openai_api_key),

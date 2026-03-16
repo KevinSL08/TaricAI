@@ -167,6 +167,24 @@ async def _get_rag_context(description: str) -> str:
         return ""
 
 
+def _call_groq(system_prompt: str, user_prompt: str) -> str:
+    """Llama a Groq API (GRATUITO, 1000 req/dia) usando endpoint compatible OpenAI."""
+    client = openai.OpenAI(
+        api_key=settings.groq_api_key,
+        base_url="https://api.groq.com/openai/v1",
+    )
+    response = client.chat.completions.create(
+        model="llama-3.3-70b-versatile",
+        max_tokens=2048,
+        temperature=0.2,
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": user_prompt},
+        ],
+    )
+    return response.choices[0].message.content
+
+
 def _call_gemini(system_prompt: str, user_prompt: str) -> str:
     """Llama a Google Gemini API (GRATUITO) con fallback entre modelos."""
     genai.configure(api_key=settings.gemini_api_key)
@@ -259,12 +277,21 @@ async def classify_product(
 
     logger.info(f"Clasificando: {description[:80]}...")
 
-    # Triple fallback: Gemini (gratis) → Claude → OpenAI
+    # Fallback chain: Groq (gratis) → Gemini (gratis) → Claude → OpenAI
     response_text = None
     source = "none"
 
-    # 1. Google Gemini (GRATUITO - tier generoso)
-    if settings.gemini_api_key:
+    # 1. Groq (GRATUITO - Llama 3.3 70B, 1000 req/dia, ultra rapido)
+    if settings.groq_api_key:
+        try:
+            response_text = _call_groq(TARIC_SYSTEM_PROMPT, user_prompt)
+            source = "groq-llama"
+            logger.info("Clasificación con Groq OK")
+        except Exception as e:
+            logger.warning(f"Groq falló ({e}), intentando Gemini...")
+
+    # 2. Google Gemini (GRATUITO - tier generoso)
+    if response_text is None and settings.gemini_api_key:
         try:
             response_text = _call_gemini(TARIC_SYSTEM_PROMPT, user_prompt)
             source = "gemini-flash"
@@ -272,7 +299,7 @@ async def classify_product(
         except Exception as e:
             logger.warning(f"Gemini falló ({e}), intentando Claude...")
 
-    # 2. Claude (Anthropic) como fallback
+    # 3. Claude (Anthropic) como fallback
     if response_text is None and settings.anthropic_api_key:
         try:
             response_text = _call_claude(TARIC_SYSTEM_PROMPT, user_prompt)
@@ -281,7 +308,7 @@ async def classify_product(
         except Exception as e:
             logger.warning(f"Claude falló ({e}), intentando OpenAI...")
 
-    # 3. OpenAI GPT-4o como último recurso
+    # 4. OpenAI GPT-4o como último recurso
     if response_text is None and settings.openai_api_key:
         try:
             response_text = _call_openai(TARIC_SYSTEM_PROMPT, user_prompt)
