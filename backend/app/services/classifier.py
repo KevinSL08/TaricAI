@@ -168,20 +168,38 @@ async def _get_rag_context(description: str) -> str:
 
 
 def _call_gemini(system_prompt: str, user_prompt: str) -> str:
-    """Llama a Google Gemini API (GRATUITO) y devuelve el texto de respuesta."""
+    """Llama a Google Gemini API (GRATUITO) con fallback entre modelos."""
     genai.configure(api_key=settings.gemini_api_key)
-    model = genai.GenerativeModel(
-        model_name="gemini-2.0-flash",
-        system_instruction=system_prompt,
-    )
-    response = model.generate_content(
-        user_prompt,
-        generation_config=genai.types.GenerationConfig(
-            max_output_tokens=2048,
-            temperature=0.2,
-        ),
-    )
-    return response.text
+
+    # Intentar varios modelos Gemini gratuitos en orden
+    models_to_try = [
+        "gemini-2.0-flash-lite",
+        "gemini-1.5-flash",
+        "gemini-2.0-flash",
+    ]
+
+    last_error = None
+    for model_name in models_to_try:
+        try:
+            model = genai.GenerativeModel(
+                model_name=model_name,
+                system_instruction=system_prompt,
+            )
+            response = model.generate_content(
+                user_prompt,
+                generation_config=genai.types.GenerationConfig(
+                    max_output_tokens=2048,
+                    temperature=0.2,
+                ),
+            )
+            logger.info(f"Gemini modelo {model_name} respondió OK")
+            return response.text
+        except Exception as e:
+            logger.warning(f"Gemini {model_name} falló: {e}")
+            last_error = e
+            continue
+
+    raise last_error or Exception("Todos los modelos Gemini fallaron")
 
 
 def _call_claude(system_prompt: str, user_prompt: str) -> str:
